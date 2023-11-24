@@ -6,6 +6,34 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>
+
+	<script>
+		const themes = {
+			light: 'light',
+			dark: 'dark'
+		};
+
+		const storageVersion = '0.0.1';
+		const localStorageVersion = window.localStorage.getItem('storageVersion');
+
+		const storageVersionSynced = localStorageVersion
+			? localStorageVersion === storageVersion
+			: false;
+
+		if (!storageVersionSynced) {
+			window.localStorage.clear();
+			window.localStorage.setItem('storageVersion', storageVersion);
+		}
+
+		const localTheme = window.localStorage.getItem('theme');
+		const hasTheme = typeof localTheme == 'string' ? localTheme : null;
+
+		if (hasTheme) {
+			window.localStorage.setItem('theme', localTheme);
+			window.document.documentElement.setAttribute('data-theme', localTheme);
+		}
+	</script>
+
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
