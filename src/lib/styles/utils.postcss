@@ -1,0 +1,57 @@
+html,
+body {
+	--header-height: 2.3rem;
+	--footer-height: 7rem;
+}
+
+@media (min-width: 768px) {
+	html,
+	body {
+		--header-height: 5.1rem;
+		--footer-height: 5.1rem;
+	}
+}
+
+.flex-center {
+	@apply flex items-center justify-center;
+}
+
+.stretch {
+	@apply w-full h-full;
+}
+
+.h-screen-new {
+	height: 100dvh;
+	height: 100vh;
+}
+
+.h-header {
+	height: var(--header-height);
+}
+
+.h-footer {
+	height: var(--header-height);
+}
+
+.h-page {
+	height: calc(100dvh - (var(--header-height) + var(--footer-height)));
+	height: calc(100vh - (var(--header-height) + var(--footer-height)));
+}
+
+.min-h-screen-new {
+	min-height: 100dvh;
+	min-height: 100vh;
+}
+
+.min-h-header {
+	min-height: var(--header-height);
+}
+
+.min-h-footer {
+	min-height: var(--header-height);
+}
+
+.min-h-page {
+	min-height: calc(100dvh - (var(--header-height) + var(--footer-height)));
+	min-height: calc(100vh - (var(--header-height) + var(--footer-height)));
+}
