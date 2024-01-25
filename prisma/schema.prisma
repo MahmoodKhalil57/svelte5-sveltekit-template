@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @unique
+
+  username       String  @unique
+  email          String  @unique
+
+  auth_session Session[]
+  key          Key[]
+  is_verified      Boolean       @default(false)
+
+  firstName      String
+  lastName       String
+  is_admin         Boolean       @default(false)
+  
+  hybridUserData  HybridUserData?
+
+}
+
+model Session {
+  id             String @id @unique
+  user_id        String
+  active_expires BigInt
+  idle_expires   BigInt
+  user           User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Key {
+  id              String  @id @unique
+  hashed_password String?
+  user_id         String
+  user            User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  created   DateTime @default(now())
+
+  @@index([user_id])
+}
+
+// ^^^^^^^^^^^^^^^^^^ luciaAuth
+
+//  This model represents an unlogged user in the system.
+model UnloggedUser {
+  id String @id @unique @default(uuid())
+
+  userData HybridUserData?
+
+  @@index([id])
+  @@map("unlogged_user")
+}
+
+model HybridUserData {
+  id String @id @unique @default(uuid())
+
+
+  cartId     String? @unique
+  customerId String? @unique
+
+  loggedUserId   String? @unique
+  unloggedUserId String? @unique
+
+  unloggedUser UnloggedUser? @relation(fields: [unloggedUserId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [loggedUserId], references: [id], onDelete: Cascade)
+
+  @@index([id])
+  @@map("user_data")
+}

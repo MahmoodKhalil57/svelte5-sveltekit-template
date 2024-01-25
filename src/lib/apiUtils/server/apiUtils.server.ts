@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
 	RequestType,
 	Routes,
@@ -20,7 +19,7 @@ import { API } from '$api/root.server';
 import { getContext } from '$api/preRequest/context.server';
 import { apiStructure } from '$lib/apiUtils/apiStructure';
 import { error } from '@sveltejs/kit';
-import { responseStatus } from '$lib/apiUtils/client/serverResponse';
+import { responseStatus } from '$lib/utils/serverResponse';
 import type { ErrorIssue } from '../client/apiClientUtils';
 export { responseStatus };
 
@@ -48,7 +47,7 @@ const getZodValidationWithRouteProcedure = <R extends Routes, P extends Procedur
 const getParams = async (url: URL, request: Request) => {
 	let route: string = '';
 	let procedure: string = '';
-	let data: any = {};
+	let data: unknown = {};
 	const pathArray = url.pathname.substring(1).split('/');
 	if (pathArray.length === 3) {
 		route = pathArray[1] ?? '';
@@ -98,10 +97,12 @@ export const handleRequest = async (url: URL, request: Request, cookies: Cookies
 			const errorIssues: ErrorIssue[] = [];
 			const errors = safeparseRes.error.formErrors.fieldErrors;
 			Object.entries(errors).forEach((error) => {
-				const [firstErrorKey, errorMessages] = error;
+				const firstErrorKey = error[0];
+				let errorMessages = error[1];
+				errorMessages = [...new Set(errorMessages)];
 				errorIssues.push({
 					key: firstErrorKey,
-					errorMessages: [...new Set(errorMessages)]
+					errorMessages
 				});
 			});
 			// validation error
@@ -109,7 +110,7 @@ export const handleRequest = async (url: URL, request: Request, cookies: Cookies
 				message: errorIssues?.[0]?.errorMessages?.[0] ?? 'Validation Error'
 			});
 		} else {
-			parsedData = safeparseRes.data as typeof parsedData;
+			parsedData = safeparseRes.data;
 		}
 	} else {
 		// procedure not found
@@ -227,14 +228,14 @@ export const getError = <S extends responseStatus, B>(status: S, body: B) => ({
 	body
 });
 
-type ResponseType<Mapping extends { [key in keyof Mapping]: any }> = {
+type ResponseType<Mapping extends { [key in keyof Mapping]: unknown }> = {
 	[S in keyof Mapping]: {
 		status: S;
 		body: Mapping[S];
 	};
 }[keyof Mapping];
 
-export const getResponse = <S extends responseStatus, R extends { [key in S]: any }>(
+export const getResponse = <S extends responseStatus, R extends { [key in S]: unknown }>(
 	status: S,
 	serverReturns: R
 ): ResponseType<R> => {
@@ -281,7 +282,7 @@ export const handleCookieVersion = (cookies: Cookies) => {
 export const handleApiRequests = async (event: RequestEvent, route: string, procedeur: string) => {
 	if (route === 'callback' && ['google', 'email'].includes(procedeur)) {
 		// @ts-expect-error - this is fine
-		const zodValidation = apiStructure[route][procedeur]['validation'] as z.ZodObject<any>;
+		const zodValidation = apiStructure[route][procedeur]['validation'] as z.ZodObject<never>;
 		event.url = getCallbackInputsFromUrlParams(event.url, Object.keys(zodValidation.shape));
 	}
 	return await svelteApiAdapter(event);

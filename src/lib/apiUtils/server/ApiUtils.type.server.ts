@@ -21,7 +21,7 @@ export type RequestType = 'POST' | 'GET';
 export type ServerResponse = Promise<{
 	body: {
 		message?: string;
-		data?: any;
+		data?: unknown;
 	};
 	status: responseStatus;
 }>;
