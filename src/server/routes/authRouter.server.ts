@@ -15,9 +15,11 @@ import { transferUserData } from '$api/controllers/userData.server';
 import { dev } from '$app/environment';
 import { responseStatus, getResponse } from '$lib/apiUtils/server/apiUtils.server';
 import { nanoid } from 'nanoid';
+import { privateProcedure } from '$api/preRequest/middleware.server';
 
 export default {
 	signOut: async ({ ctx }) => {
+		await privateProcedure(ctx);
 		const sessionToken = ctx.cookies.get('auth_session') ?? '';
 		await auth.invalidateSession(sessionToken);
 
@@ -253,12 +255,9 @@ export default {
 		});
 	},
 	refreshUser: async ({ ctx }) => {
-		let userSession:
-			| NonNullable<Awaited<ReturnType<typeof ctx.authRequest.validate>>>['user']
-			| null = null;
+		const { privateCtx } = await privateProcedure(ctx);
 
-		const validUser = await ctx.authRequest.validate();
-		userSession = validUser?.user ?? null;
+		const userSession = privateCtx.sessionUser ?? null;
 
 		// eslint-disable-next-line prefer-const
 		ctx.status = userSession?.userId ? responseStatus.SUCCESS : responseStatus.UNAUTHORIZED;
