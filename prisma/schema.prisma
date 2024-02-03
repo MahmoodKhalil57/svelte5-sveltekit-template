@@ -78,7 +78,6 @@ model HybridUserData {
 }
 
 model UrlEntry {
-id              String  @id @unique
+id              String  @id @unique @default(uuid())
 longurl         String
-shorturl        String  @unique
 }

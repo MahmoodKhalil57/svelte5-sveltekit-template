@@ -1,8 +1,16 @@
+import { prisma } from '$api/clients/prisma.server';
 import type { APITypeB } from '$lib/apiUtils/server/ApiUtils.type.server';
 import { responseStatus, getResponse } from '$lib/apiUtils/server/apiUtils.server';
 
 export default {
 	testPost: async ({ ctx, input }) => {
+		prisma
+		await prisma.urlEntry.create({
+  data: {
+    longurl: input.name,
+    
+  },
+});
 		console.log(input.name)
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 		
