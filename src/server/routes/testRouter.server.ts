@@ -3,7 +3,9 @@ import { responseStatus, getResponse } from '$lib/apiUtils/server/apiUtils.serve
 
 export default {
 	testPost: async ({ ctx, input }) => {
+		console.log(input.name)
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
+		
 
 		try {
 			ctx.cookies.set('name', 'test', {

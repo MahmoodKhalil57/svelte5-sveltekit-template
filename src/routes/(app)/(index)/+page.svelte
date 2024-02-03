@@ -4,6 +4,11 @@
 	import { signOut } from '$lib/client/luciaClient';
 	import ContinueWithGoogle from '$lib/components/form/continueWithGoogle.svelte';
 	import { sessionUserStore } from '$lib/stores/userStore';
+	let longurl = '';
+	const test = async () => {
+		console.log('hello');
+		await apiSend(fetch).testRouter.testPost.POST({ name: longurl }, false);
+	};
 
 	let apiRespnseReceived = false;
 	const sendRequest = async () => {
@@ -17,8 +22,18 @@
 <button on:click={sendRequest}> Test Api </button>
 {apiRespnseReceived ? 'SUCCESS' : ''}
 
-<div class="flex-col gap-6 px-2 sm:pb-40 flex-center stretch">Hello</div>
-
+<div class="flex flex-wrap">
+	<div class="flex-col gap-6 px-2 sm:pb-40 flex-center stretch">Hello</div>
+	<div class="flex-col gap-6 px-2 sm:pb-40 flex-center stretch">URL Shortner</div>
+	<label for="longUrl" class="p-1 font-bold">Long URL:</label>
+	<input
+		type="text"
+		bind:value={longurl}
+		placeholder="Type here"
+		class="input input-bordered w-full max-w-xs p-2"
+	/>
+	<button class="btn glass" on:click={test}>Shorten</button>
+</div>
 {#if $sessionUserStore?.userId}
 	<div
 		on:keydown={() => signOut()}

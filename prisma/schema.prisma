@@ -76,3 +76,9 @@ model HybridUserData {
   @@index([id])
   @@map("user_data")
 }
+
+model UrlEntry {
+id              String  @id @unique
+longurl         String
+shorturl        String  @unique
+}
