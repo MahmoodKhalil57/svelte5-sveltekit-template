@@ -8,6 +8,7 @@ export default {
 		await prisma.urlEntry.create({
   data: {
     longurl: input.name,
+	shorturl: "",
     
   },
 });
