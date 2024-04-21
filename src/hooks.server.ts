@@ -1,23 +1,13 @@
-import type { Handle } from '@sveltejs/kit';
-// import { auth } from '$api/clients/luciaClient.server';
+import { svelteApiHandle } from '$apiUtils/server/apiUtils.server';
+import { getContext } from '$api/helpers/context.server';
+import { middlewareMap } from '$api/helpers/middleware.server';
+import { apiStructure } from '$api/helpers/apiStructure.server';
+import { API } from '$api/root.server';
 import { sequence } from '@sveltejs/kit/hooks';
-import { handleCookieVersion, handleApiRequests } from '$lib/apiUtils/server/apiUtils.server';
 
-const apiHook: Handle = async ({ event, resolve }) => {
-	// handle cookie version
-	handleCookieVersion(event.cookies);
-
-	// handle api request
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [route, procedeur, ..._] = event.url.pathname.split('/').filter((x) => x);
-	if (route && procedeur && ['api', 'callback'].includes(route)) {
-		return handleApiRequests(event, route, procedeur);
-	}
-
-	// resolve normally
-	return await resolve(event);
-};
-export const handle = sequence(apiHook);
+export const handle = sequence(
+	svelteApiHandle(apiStructure, getContext, middlewareMap, API, '0.1.4')
+);
 
 // const luciaHandle: Handle = async ({ event, resolve }) => {
 // 	event.locals.auth = auth.handleRequest(event);

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { responseStatus } from '$lib/apiUtils/client/serverResponse';
-	import { apiSend } from '$lib/client/apiClient';
+	import { apiSend, responseStatus } from '$src/lib/client/apiClient';
 
 	let apiRespnseReceived = false;
 	const sendRequest = async () => {

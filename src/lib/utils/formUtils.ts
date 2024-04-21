@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { z } from 'zod';
-import toast from 'svelte-french-toast';
-import type { ApiClientError } from '$lib/apiUtils/client/apiClientUtils';
+import type { ApiClientError } from '$apiUtils/client/apiClientUtils';
 import type { apiSend } from '$lib/client/apiClient';
+import { toastWrapper } from '$lib/utils/toastWrapper';
 
 export class EventFormGetter {
 	htmlFormElement: HTMLFormElement | null;
@@ -28,8 +26,8 @@ export class EventFormGetter {
 
 	getCheckboxField(elementId: string) {
 		return (
-			(this.htmlFormElement?.querySelector(`#${elementId}`) as HTMLInputElement)?.value ===
-				'true' ?? ''
+			((this.htmlFormElement?.querySelector(`#${elementId}`) as HTMLInputElement)?.value ?? '') ===
+			'true'
 		);
 	}
 }
@@ -49,7 +47,7 @@ export const getInlineErrors = (key: string, errorIssues: ApiClientError['errorI
 };
 
 const promiseToast = (promise: Promise<void>) => {
-	return toast.promise(promise, {
+	return toastWrapper().promise(promise, {
 		loading: 'Submitting...',
 		success: 'Submitted!',
 		error: 'Could not submit.'
@@ -60,7 +58,8 @@ export const sendAndHandle = async <S extends () => ReturnType<typeof apiSend> |
 	s: S,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	h: ((response: any) => boolean) | ((response: any) => Promise<boolean>),
-	resetOnSuccess = true
+	resetOnSuccess = true,
+	submitEvent: SubmitEvent | undefined = undefined
 ) => {
 	const response = (await promiseToast(s())) as Awaited<ReturnType<typeof s>>;
 
@@ -70,7 +69,7 @@ export const sendAndHandle = async <S extends () => ReturnType<typeof apiSend> |
 	} else {
 		if (resetOnSuccess) {
 			// @ts-expect-error 2339
-			submitEvent.target?.reset();
+			submitEvent?.target?.reset();
 		}
 	}
 };
