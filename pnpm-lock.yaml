@@ -70,6 +70,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.7.1
     version: 3.7.1(postcss@8.4.38)(svelte@4.2.15)
+  tailwind-icones-plugin:
+    specifier: ^1.1.4
+    version: 1.1.4
   tailwindcss:
     specifier: ^3.3.5
     version: 3.4.3
@@ -2842,6 +2845,15 @@ packages:
       locate-character: 3.0.0
       magic-string: 0.30.10
       periscopic: 3.1.0
+
+  /tailwind-icones-plugin@1.1.4:
+    resolution: {integrity: sha512-M22wFVQTYeW6tUXfLrmdqAwoqb0KZDOuS4NlMq41EmLcah12wtx1fEX++mNechOmiqVUXHFIdx+l+PauEp89kw==}
+    hasBin: true
+    dependencies:
+      tailwindcss: 3.4.3
+    transitivePeerDependencies:
+      - ts-node
+    dev: true
 
   /tailwindcss@3.4.3:
     resolution: {integrity: sha512-U7sxQk/n397Bmx4JHbJx/iSOOv5G+II3f1kpLpY2QeUv5DcPdcTsYLlusZfq1NthHS1c1cZoyFmmkex1rzke0A==}
