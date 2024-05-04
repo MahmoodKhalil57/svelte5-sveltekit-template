@@ -1,14 +1,16 @@
 <script lang="ts">
 	// import { InputTypeEnum } from '$lib/components/form/inputType';
 
-	export let label: string;
+	export let label: string = '';
 	export let placeHolder: string = '';
 	export let id: string = '';
 	export let value: string = '';
 </script>
 
-<label class="w-full"
-	>{label}:<br />
+<label class="w-full">
+	{#if label}
+		<span>{label}:</span>
+	{/if}
 
 	<textarea
 		class="!outline-none textarea textarea-bordered w-full"
@@ -16,5 +18,5 @@
 		{id}
 		name={id}
 		bind:value
-	/></label
->
+	/>
+</label>

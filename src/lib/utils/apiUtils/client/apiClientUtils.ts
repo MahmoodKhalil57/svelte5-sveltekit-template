@@ -26,7 +26,8 @@ export const InputTypeEnum = {
 	TEXT: 'TEXT',
 	EMAIL: 'EMAIL',
 	TEXTAREA: 'TEXTAREA',
-	PASSWORD: 'PASSWORD'
+	PASSWORD: 'PASSWORD',
+	LINK: 'LINK'
 };
 
 const makeGetRequest = async <PT extends string, PL>(pt: PT, pl: PL, f: typeof fetch) => {
