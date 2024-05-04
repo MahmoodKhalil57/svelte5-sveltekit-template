@@ -114,7 +114,8 @@ export const apiStructure = {
 						placeHolder: 'password',
 						label: 'Password'
 					}
-				]
+				],
+				[{ id: 'forgotPassword', type: 'LINK', text: 'Forgot password?', href: '/forgotPassword' }]
 			] as const
 		},
 		sendResetPasswordEmail: {
