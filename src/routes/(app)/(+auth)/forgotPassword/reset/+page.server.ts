@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ url, parent }) => {
 		codeId = codeRow?.id;
 	}
 	if (!codeId) {
-		redirect(307, `/refreshLogin`);
+		redirect(302, '/verify');
 	}
 
 	return { codeId };
