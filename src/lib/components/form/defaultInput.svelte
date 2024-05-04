@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { InputTypeEnum } from '$src/lib/utils/apiUtils/client/apiClientUtils';
 
-	export let label: string;
+	export let label: string = '';
 	export let type: keyof typeof InputTypeEnum;
 	export let placeHolder: string = '';
 	export let id: string = '';
@@ -9,7 +9,9 @@
 </script>
 
 <label class="w-full">
-	<span class="hidden">{label}</span>
+	{#if label}
+		<span>{label}</span>
+	{/if}
 	{#if type === InputTypeEnum.TEXT}
 		<input
 			placeholder={placeHolder}

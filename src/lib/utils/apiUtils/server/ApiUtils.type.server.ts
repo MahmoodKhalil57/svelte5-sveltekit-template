@@ -7,9 +7,11 @@ import type { endpoints } from './apiUtils.server';
 export type EndpointType = keyof typeof endpoints;
 export type Field = {
 	id: string;
-	label: string;
+	label?: string;
 	type: keyof typeof InputTypeEnum;
 	placeHolder?: string;
+	href?: string;
+	text?: string;
 };
 export type FormStructure = readonly (readonly Field[])[];
 
