@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "pnpm script:migrateApiStructure && vite dev",
 		"pre:dev": "pnpm i && pnpm script:migrateApiStructure && pnpm prisma:push",
-		"build": "pre:build && vite build",
+		"build": "pnpm pre:build && vite build",
 		"pre:build": "pnpm script:migrateApiStructure && pnpm prod:prisma:push",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
