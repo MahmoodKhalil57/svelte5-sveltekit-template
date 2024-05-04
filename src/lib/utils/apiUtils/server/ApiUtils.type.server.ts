@@ -86,8 +86,8 @@ export type FileType = {
 }[];
 
 export type serverStoreActionInputs<STHDL extends ServerStoreHandle | undefined> = {
-	[K in keyof STHDL]: {
-		[K2 in keyof STHDL[K]]: STHDL[K][K2] extends (value: infer V) => void ? V : never;
+	[K in keyof STHDL]?: {
+		[K2 in keyof STHDL[K]]?: STHDL[K][K2] extends (value: infer V) => void ? V : never;
 	};
 };
 
@@ -96,6 +96,7 @@ export type ServerResponse<STHDL extends ServerStoreHandle | undefined> = Promis
 		message?: string;
 		data?: any;
 		stores?: serverStoreActionInputs<STHDL>;
+		clientRedirect?: string;
 	};
 	status: responseStatus;
 }>;

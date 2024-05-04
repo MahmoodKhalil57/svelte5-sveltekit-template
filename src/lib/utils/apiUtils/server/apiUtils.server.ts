@@ -159,6 +159,13 @@ export const getError = <S extends responseStatus, B>(status: S, body: B) => {
 	};
 };
 
+type ResponseType<Mapping extends { [key in keyof Mapping]: unknown }> = {
+	[S in keyof Mapping]: {
+		status: S;
+		body: Mapping[S];
+	};
+}[keyof Mapping];
+
 export const getResponse = <
 	S extends responseStatus,
 	R extends {
@@ -166,6 +173,7 @@ export const getResponse = <
 			message?: string;
 			data?: any;
 			stores?: serverStoreActionInputs<ServerStoreHandle>;
+			clientRedirect?: string;
 		};
 	}
 >(
@@ -175,7 +183,7 @@ export const getResponse = <
 	return {
 		status,
 		body: serverReturns[status]
-	};
+	} as ResponseType<R>;
 };
 
 export const getCallbackInputsFromUrlParams = <I extends string[]>(url: URL, inputs: I) => {
