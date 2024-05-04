@@ -1,5 +1,4 @@
-import type { APITypeB } from '$lib/apiUtils/server/ApiUtils.type.server';
-import { responseStatus, getResponse } from '$lib/apiUtils/server/apiUtils.server';
+import { type APIType, responseStatus, getResponse } from '$api/root.server';
 
 export default {
 	testPost: async ({ ctx, input }) => {
@@ -11,7 +10,7 @@ export default {
 			});
 			ctx.status = responseStatus.SUCCESS;
 		} catch (e) {
-			console.log(e);
+			console.log('🚀 ~ testPost: ~ e:', e);
 		}
 
 		return getResponse(ctx.status, {
@@ -19,7 +18,7 @@ export default {
 				message: ''
 			},
 			[responseStatus.SUCCESS]: {
-				data: { name: input.name }
+				data: { name: input.name, message: 'Success' }
 			}
 		});
 	},
@@ -32,7 +31,7 @@ export default {
 			});
 			ctx.status = responseStatus.SUCCESS;
 		} catch (e) {
-			console.log(e);
+			console.log('🚀 ~ testGet: ~ e:', e);
 		}
 
 		return getResponse(ctx.status, {
@@ -44,4 +43,4 @@ export default {
 			}
 		});
 	}
-} satisfies APITypeB<'testRouter'>;
+} satisfies APIType['testRouter'];

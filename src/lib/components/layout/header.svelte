@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Logo from '$lib/components/template/logo.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
+	import { signOut } from '$src/lib/client/luciaClient';
+	import { sessionUserStore } from '$src/lib/stores/userStore';
 </script>
 
 <div class="header">
@@ -8,11 +10,23 @@
 		<a href="/"><Logo /></a>
 		<div class="flex-none hidden sm:block">
 			<ul class="gap-3 px-1 text-lg menu menu-horizontal">
+				<Navigation />
 				<li>
-					<Navigation />
-				</li>
-				<li>
-					<div class="!bg-inherit p-0"><a href="/contact" class="btn btn-accent">Contact</a></div>
+					<div class="!bg-inherit p-0">
+						{#if $sessionUserStore?.id}
+							<div
+								on:keydown={() => signOut()}
+								on:click={() => signOut()}
+								role="button"
+								tabindex="0"
+								class="btn btn-accent"
+							>
+								Sign Out
+							</div>
+						{:else}
+							<a href="/login" class="btn btn-accent">Login</a>
+						{/if}
+					</div>
 				</li>
 			</ul>
 		</div>

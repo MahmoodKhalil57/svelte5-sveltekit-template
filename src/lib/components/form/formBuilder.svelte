@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { responseStatus } from '$lib/apiUtils/client/serverResponse';
+	import { toastWrapper } from '$src/lib/utils/toastWrapper';
 
-	import { promiseToastV2 } from '$lib/apiUtils/client/formUtils';
+	import { publicApiStructure } from '$src/lib/utils/apiUtils/client/clientApiStructure';
+
+	import type { APIInputType, APIOutputType } from '$lib/client/apiClient';
+	import { responseStatus } from '$lib/client/apiClient';
 
 	import FormErrorMessage from '$lib/components/form/formErrorMessage.svelte';
 	import FormFlashMessage from '$lib/components/form/formFlashMessage.svelte';
@@ -9,18 +12,15 @@
 		getFormStructureWithRouteProcedure,
 		getEmptyFormObject,
 		type ErrorIssue,
-		type ApiClientError
-	} from '$lib/apiUtils/client/apiClientUtils';
+		type ApiClientError,
+		validateZod
+	} from '$apiUtils/client/apiClientUtils';
 	import ButtonDefault from '$lib/components/ui/buttonDefault.svelte';
-	import FormElement from './formElement.svelte';
-	import type {
-		Routes,
-		Procedures,
-		APIInput,
-		APIOutput
-	} from '$lib/apiUtils/server/ApiUtils.type.server';
+	import FormElement from '$lib/components/form/formElement.svelte';
+	import type { PublicRoutes, PublicProcedures } from '$apiUtils/server/ApiUtils.type.server';
+	import type { SuccessFullApiSend } from '$lib/client/apiClient';
 
-	import { makeApiRequest } from '$lib/apiUtils/client/apiClientUtils';
+	import { makeApiRequest } from '$apiUtils/client/apiClientUtils';
 
 	let flashData:
 		| {
@@ -32,17 +32,25 @@
 	export let inlineErrors: ErrorIssue[] = [];
 	export let disabledButton = false;
 
-	type R = $$Generic<Routes>;
-	type P = $$Generic<Procedures<R>>;
+	type R = $$Generic<PublicRoutes>;
+	type P = $$Generic<PublicProcedures<R>>;
 	export let route: R;
 	export let procedure: P;
 
 	export let formStructure = getFormStructureWithRouteProcedure(route, procedure) as Exclude<
-		ReturnType<typeof getFormStructureWithRouteProcedure>,
-		undefined
+		ReturnType<typeof getFormStructureWithRouteProcedure<R, P>>,
+		never[]
 	>;
 
 	export let formData = getEmptyFormObject(formStructure);
+
+	export let extraValidation:
+		| ((
+				payload: ReturnType<
+					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
+				>
+		  ) => ReturnType<typeof validateZod>)
+		| undefined = undefined;
 
 	const onSubmit = async (
 		submitEvent: SubmitEvent,
@@ -50,7 +58,13 @@
 	) => {
 		const submitForm = async (submitEvent: SubmitEvent) => {
 			disabledButton = true;
-			const response = await submitFetchRequest(route, procedure, formData as APIInput<R, P>);
+			const response = await submitFetchRequest(
+				route,
+				procedure,
+				formData as ReturnType<
+					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
+				>
+			);
 			const resStatus = await handleFlashMessageFunction(flashData, inlineErrors, response);
 			flashData = resStatus.flashData;
 			inlineErrors = resStatus.inlineErrors;
@@ -62,26 +76,40 @@
 					// @ts-expect-error 2339
 					submitEvent?.target?.reset();
 				};
-				await onSuccess({ resetSubmitEvent });
+				await onSuccess({
+					resetSubmitEvent,
+					response: response as SuccessFullApiSend<R, P>
+				});
 			}
 			return response;
 		};
-		await promiseToastV2(submitForm(submitEvent)).finally(() =>
-			setTimeout(() => {
-				disabledButton = false;
-			}, 1000)
-		);
+		toastWrapper()
+			.promise(submitForm(submitEvent), {
+				loading: 'Submitting...',
+				success: (res) => {
+					// @ts-ignore
+					return res?.body?.data?.message ?? 'Success';
+				},
+				error: 'Internal error.'
+			})
+			.finally(() =>
+				setTimeout(() => {
+					disabledButton = false;
+				}, 1000)
+			);
 	};
 
-	export const submitFetchRequest = async (route: R, procedure: P, formData: APIInput<R, P>) => {
-		return await makeApiRequest(
-			// @ts-expect-erroritForm requesttype of makeApiRequest is expected to be POST
-			'POST',
-			route,
-			procedure,
-			formData,
-			true
-		);
+	export const submitFetchRequest = async (
+		route: R,
+		procedure: P,
+		formData: APIInputType<R, P>
+	) => {
+		let validate: boolean | undefined;
+		// @ts-ignore
+		if (publicApiStructure[route]?.[procedure]?.validation) {
+			validate = true;
+		}
+		return await makeApiRequest('POST', route, procedure, formData, validate, extraValidation);
 	};
 
 	export let handleFlashMessage = async (
@@ -93,17 +121,22 @@
 			| undefined
 			| null,
 		inlineErrors: ErrorIssue[],
-		response: APIOutput<R, P> | ApiClientError
+		response: APIOutputType<R, P> | ApiClientError
 	) => {
 		let requestSuccess = false;
 		// @ts-expect-error 2339
 		switch (response?.status) {
 			case responseStatus.SUCCESS:
 				requestSuccess = true;
+				// @ts-expect-error 2339
+				if (response?.body?.data?.message) {
+					// @ts-expect-error 2339
+					flashData = { message: response.body.data.message, color: 'text-green-400' };
+				}
 				break;
 			case responseStatus.INTERNAL_SERVER_ERROR:
 				// @ts-expect-error 2339
-				flashData = { message: response?.body?.message ?? 'Internal Server Error' };
+				flashData = { message: response?.body?.data?.message ?? 'Internal Server Error' };
 				break;
 			case responseStatus.VALIDATION_ERROR:
 				// @ts-expect-error 2339
@@ -115,21 +148,25 @@
 		return { flashData: flashData, inlineErrors: inlineErrors, requestSuccess };
 	};
 
-	export let onSuccess = async (data: { resetSubmitEvent: () => void }) => {
+	export let onSuccess = async (data: {
+		resetSubmitEvent: () => void;
+		response: SuccessFullApiSend<R, P>;
+	}) => {
+		inlineErrors = [];
 		data.resetSubmitEvent();
 	};
 </script>
 
 <form
 	id="{route}/{String(procedure)}"
-	class="flex flex-col items-center justify-center w-full max-w-xl gap-3 px-10"
+	class="flex flex-col w-full max-w-xl gap-3 px-10 justify-center items-center"
 	novalidate
 	on:submit|preventDefault={(event) => onSubmit(event, handleFlashMessage)}
 >
 	<div>
 		<FormFlashMessage {flashData} />
 	</div>
-	<div class="flex flex-col w-full gap-3">
+	<div class="flex flex-col gap-3 w-full">
 		{#each formStructure as row}
 			<div class="flex flex-row gap-2">
 				{#each row as field}
@@ -141,10 +178,10 @@
 			</div>
 		{/each}
 	</div>
-	<div class="flex flex-col items-center justify-center gap-10 w-3/4 max-w-[300px]">
+	<div class="flex flex-col items-center justify-center gap-10 w-3/4 max-w-[300px] mt-2 md:mt-5">
 		<ButtonDefault
 			value="Reset Password"
-			innerClass="btn-secondary btn w-full self-center capitalize sm:text-[100%]"
+			Class="btn-secondary btn w-full self-center capitalize sm:text-[100%]"
 			dynamicDisabled={disabledButton}
 		>
 			Submit

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { InputTypeEnum } from '$lib/apiUtils/apiStructure';
+	import { InputTypeEnum } from '$src/lib/utils/apiUtils/client/apiClientUtils';
+
 	export let label: string;
-	export let type: InputTypeEnum;
+	export let type: keyof typeof InputTypeEnum;
 	export let placeHolder: string = '';
 	export let id: string = '';
 	export let value: string = '';
@@ -24,7 +25,16 @@
 			type="email"
 			name={id}
 			placeholder={placeHolder}
-			class="w-full input placeholder-base-300 bg-gray-100 !outline-none !border-none"
+			class="w-full !outline-none input input-bordered"
+			bind:value
+		/>
+	{:else if type === InputTypeEnum.PASSWORD}
+		<input
+			{id}
+			type="password"
+			name={id}
+			placeholder={placeHolder}
+			class="w-full !outline-none input input-bordered"
 			bind:value
 		/>
 	{/if}

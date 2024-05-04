@@ -1,9 +1,9 @@
 import { apiSend } from '$lib/client/apiClient';
 import { sessionUserStore } from '$lib/stores/userStore';
-import { responseStatus } from '$lib/utils/serverResponse';
+import { responseStatus } from '$lib/client/apiClient';
 
 export const signOut = async () => {
-	const response = await apiSend().authRouter.signOut.POST({}, true);
+	const response = await apiSend().authRouter.signOut.POST({});
 	if (response.status === responseStatus.SUCCESS) {
 		sessionUserStore.set(response.body.data.userSession);
 		window.location.reload();
@@ -31,7 +31,7 @@ export const signInEmail = async (email: string, password: string) => {
 		email,
 		password
 	};
-	const response = await apiSend().authRouter.signInEmail.POST(payload, false);
+	const response = await apiSend().authRouter.signInEmail.POST(payload);
 	if (response.status === responseStatus.SUCCESS) {
 		sessionUserStore.set(response.body.data.userSession);
 	}
@@ -39,6 +39,8 @@ export const signInEmail = async (email: string, password: string) => {
 };
 
 export const signOnGoogle = async () => {
-	const response = await apiSend().authRouter.signOnGoogle.POST({}, false);
-	window.location.href = response.body.data.url.toString();
+	const response = await apiSend().authRouter.signOnGoogle.POST({});
+	if (response.status === responseStatus.SUCCESS) {
+		window.location.href = response.body.data.url.toString();
+	}
 };

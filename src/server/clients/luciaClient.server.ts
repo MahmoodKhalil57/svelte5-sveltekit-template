@@ -1,40 +1,51 @@
-import { lucia } from 'lucia';
-import { sveltekit } from 'lucia/middleware';
-import { prisma } from '@lucia-auth/adapter-prisma';
-import { google } from '@lucia-auth/oauth/providers';
-import { prisma as prismaClient } from '$api/clients/prisma.server';
+import { Lucia } from 'lucia';
+import { PrismaAdapter } from '@lucia-auth/adapter-prisma';
+import { prisma } from '$api/clients/prisma.server';
 import env from '$e';
-import { customAlphabet } from 'nanoid';
+import { customAlphabet, urlAlphabet } from 'nanoid';
+import { webcrypto } from 'node:crypto';
+import { Google } from 'arctic';
 
-export const auth = lucia({
-	adapter: prisma(prismaClient, {
-		user: 'user', // model User {}
-		key: 'key', // model Key {}
-		session: 'session' // model Session {}
-	}),
-	env: 'DEV',
-	middleware: sveltekit(),
-	getUserAttributes: (databaseUser) => {
-		return {
-			userId: databaseUser.id,
-			username: databaseUser.username,
-			firstName: databaseUser.firstName,
-			lastName: databaseUser.lastName,
-			email: databaseUser.email,
-			is_verified: databaseUser.is_verified,
-			is_admin: databaseUser.is_admin
-		};
-	}
+const urlAlphabetGenerator = customAlphabet(urlAlphabet, 21);
+
+if (!globalThis.crypto) {
+	globalThis.crypto = webcrypto as Crypto;
+}
+
+const adapter = new PrismaAdapter(prisma.authSession, prisma.authUser);
+
+export const getUserAttributes = (databaseUser: DatabaseUserAttributes) => {
+	return {
+		id: databaseUser.id,
+		username: databaseUser.username,
+		firstName: databaseUser.firstName,
+		lastName: databaseUser.lastName,
+		email: databaseUser.email,
+		profilePicture: databaseUser.profilePicture,
+		is_verified: databaseUser.is_verified,
+		is_admin: databaseUser.is_admin
+	};
+};
+
+export const auth = new Lucia(adapter, {
+	sessionCookie: {
+		expires: false,
+		attributes: {
+			secure: process.env.NODE_ENV === 'production'
+		}
+	},
+	getUserAttributes
 });
 
 export type Auth = typeof auth;
 
-export const googleAuth = google(auth, {
-	clientId: env.GOOGLE_ID(),
-	clientSecret: env.GOOGLE_SECRET(),
-	redirectUri: env.WEBSITE_URL() + '/callback/google',
-	scope: ['email', 'profile']
-});
+const GOOGLE_ID = env.GOOGLE_ID();
+const GOOGLE_SECRET = env.GOOGLE_SECRET();
+const WEBSITE_URL = env.WEBSITE_URL();
+export const googleAuth =
+	GOOGLE_ID && GOOGLE_SECRET && WEBSITE_URL
+		? new Google(GOOGLE_ID, GOOGLE_SECRET, WEBSITE_URL + '/api/callback/google')
+		: undefined;
 
 // export const emailVerificationToken = idToken(auth, 'email_verification', {
 // 	expiresIn: 60 * 60 // 1 hour
@@ -49,7 +60,7 @@ const EXPIRES_IN = 1000 * 60 * 60 * 2; // 2 hours
 // validates token and returns user id if valid
 export const validateToken = async (token: string) => {
 	const storedUserToken = (
-		await prismaClient.key.findMany({
+		await prisma.authToken.findMany({
 			where: {
 				id: token,
 				created: {
@@ -59,17 +70,25 @@ export const validateToken = async (token: string) => {
 		})
 	)[0];
 	if (!storedUserToken) throw new Error('Invalid token');
-	await prismaClient.key.delete({
+	await prisma.authToken.delete({
 		where: {
 			id: token
 		}
 	});
-	return auth.getUser(storedUserToken.user_id);
+
+	const userRecord = await prisma.authUser.findUnique({
+		where: {
+			id: storedUserToken.user_id
+		}
+	});
+
+	const luciaUser = getUserAttributes(userRecord!);
+	return luciaUser;
 };
 
 export const generateVerificationToken = async (userId: string) => {
 	let storedUserToken = (
-		await prismaClient.key.findMany({
+		await prisma.authToken.findMany({
 			where: {
 				user_id: userId,
 				created: {
@@ -86,11 +105,11 @@ export const generateVerificationToken = async (userId: string) => {
 	// so only a single valid token exists per user
 	// for high security apps
 
-	const token = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10)();
-	storedUserToken = await prismaClient.key.create({
+	const token = urlAlphabetGenerator();
+	storedUserToken = await prisma.authToken.create({
 		data: {
 			id: token,
-			user: {
+			authUser: {
 				connect: {
 					id: userId
 				}
@@ -99,3 +118,21 @@ export const generateVerificationToken = async (userId: string) => {
 	});
 	return storedUserToken.id;
 };
+
+declare module 'lucia' {
+	interface Register {
+		Lucia: typeof auth;
+		DatabaseUserAttributes: DatabaseUserAttributes;
+	}
+}
+
+interface DatabaseUserAttributes {
+	id: string;
+	username: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	profilePicture: string;
+	is_verified: boolean;
+	is_admin: boolean;
+}

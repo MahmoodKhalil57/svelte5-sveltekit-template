@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Footer from '$lib/components/layout/footer.svelte';
 	import Header from '$lib/components/layout/header.svelte';
+	import { Toaster } from 'svelte-french-toast';
 </script>
 
 <div class="w-full min-h-screen-new">
@@ -14,3 +15,5 @@
 		<Footer />
 	</div>
 </div>
+
+<Toaster />

@@ -2,12 +2,12 @@
 	import { signOnGoogle } from '$lib/client/luciaClient';
 	import ButtonDefault from '$lib/components/ui/buttonDefault.svelte';
 
-	export let innerClass = '';
+	export let Class = '';
 </script>
 
 <ButtonDefault
 	form="none"
-	innerClass="flex flex-row flex-nowrap whitespace-nowrap btn-ghost border-base-300 min-w-[250px] {innerClass}"
+	Class="flex flex-row flex-nowrap whitespace-nowrap btn-ghost border-base-300 min-w-[250px] {Class}"
 	onClick={signOnGoogle}
 >
 	<div class="i-logos-google-icon" />

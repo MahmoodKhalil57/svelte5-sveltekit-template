@@ -1,68 +1,122 @@
+import { type APIType, responseStatus } from '$api/root.server';
 import { prisma } from '$api/clients/prisma.server';
-import type { APITypeB } from '$lib/apiUtils/server/ApiUtils.type.server';
 import { auth, googleAuth, validateToken } from '$api/clients/luciaClient.server';
 import { transferUserData } from '$api/controllers/userData.server';
 import { redirect } from '@sveltejs/kit';
-import { responseStatus } from '$lib/utils/serverResponse';
-import { nanoid } from 'nanoid';
+import { nanoid, customAlphabet } from 'nanoid';
+import { parseJWT } from 'oslo/jwt';
 
+let alphanumericGenerator = customAlphabet(
+	'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+	10
+);
+
+interface GoogleUserResult {
+	iss: string;
+	azp: string;
+	aud: string;
+	sub: string;
+	email: string;
+	email_verified: boolean;
+	at_hash: string;
+	nonce: string;
+	name: string;
+	picture: string;
+	given_name: string;
+	family_name: string;
+	iat: number;
+	exp: number;
+}
 export default {
-	email: async ({ ctx, input }) => {
-		const user = (await ctx.authRequest.validate())?.user;
-		if (!user) {
+	email: async ({ ctx, privateCtx, input }) => {
+		if (!privateCtx.userAttributes?.id) {
 			try {
 				const user = await validateToken(input.code);
 				if (user) {
-					await auth.updateUserAttributes(user.userId, {
-						is_verified: true
+					await prisma.authUser.update({
+						where: {
+							id: user.id
+						},
+						data: {
+							is_verified: true
+						}
 					});
-					const session = await auth.createSession({ userId: user.userId, attributes: {} });
-					ctx.authRequest.setSession(session);
+
+					const session = await auth.createSession(user.id, {});
+					ctx.cookies.set(auth.sessionCookieName, session.id, {
+						path: '/',
+						maxAge: 60 * 60
+					});
 					const unloggedId = ctx.cookies.get('unloggedinSession');
 					if (unloggedId) {
-						await transferUserData(prisma, user.userId, unloggedId);
+						await transferUserData(prisma, user.id, unloggedId);
 					}
 				}
 			} catch (e) {
 				// invalid code
-				return { body: { message: 'Invalid code' }, status: responseStatus.BAD_REQUEST };
+				return { body: { message: 'Invalid code' }, status: responseStatus.UNAUTHORIZED };
 			}
 		}
-		throw redirect(302, '/');
+		redirect(302, '/');
 	},
-	google: async ({ ctx, input }) => {
-		const user = (await ctx.authRequest.validate())?.user;
+	google: async ({ ctx, privateCtx, input }) => {
+		const user = privateCtx.userAttributes;
+		const codeVerifierCookie = ctx.cookies.get('google_oauth_code_verifier') ?? '';
 		const storedState = ctx.cookies.get('google_oauth_state');
+		const ipAddress = ctx.request.headers.get('x-forwarded-for') || ctx.getClientAddress();
 
-		if (!user && storedState === input.state) {
-			const { getExistingUser, googleUser, createUser } = await googleAuth.validateCallback(
-				input.code
-			);
+		if (!user && storedState === input.state && googleAuth !== undefined) {
+			const tokens = await googleAuth.validateAuthorizationCode(input.code, codeVerifierCookie);
+			const googleUserResult = parseJWT(tokens.idToken)!.payload as GoogleUserResult;
+
 			const getUser = async () => {
 				try {
-					const existingUser = await getExistingUser();
+					const existingUser = await prisma.authUser.findFirst({
+						where: {
+							email: googleUserResult.email
+						}
+					});
 					if (existingUser) {
 						if (existingUser.is_verified) {
 							// user is already verified
 							return existingUser;
 						} else {
 							// delete user
-							await auth.deleteUser(existingUser.userId);
+							await auth.invalidateSession(existingUser.id);
+							await prisma.authKey.deleteMany({
+								where: {
+									authUser: {
+										id: existingUser.id
+									}
+								}
+							});
+							await prisma.authToken.deleteMany({
+								where: {
+									authUser: {
+										id: existingUser.id
+									}
+								}
+							});
+							await prisma.authUser.delete({
+								where: {
+									id: existingUser.id
+								}
+							});
 						}
 					}
 				} catch (e) {
-					console.log('🚀 ~ file: +server.ts:54 ~ getUser ~ e:', e);
+					// console.log('🚀 ~ getUser ~ e:', e);
 				}
 
 				// create a new user if the user does not exist
-				const [firstName, lastName] = googleUser.name.split(' ');
+				const [firstName, lastName] = googleUserResult.name.split(' ');
 
 				const userNameAvailable =
-					googleUser.name &&
+					googleUserResult.name &&
 					(
-						await prisma.user.findUnique({
+						await prisma.authUser.findUnique({
 							where: {
-								username: googleUser.name
+								username: googleUserResult.name
 							},
 							select: {
 								username: true
@@ -70,28 +124,33 @@ export default {
 						})
 					)?.username !== undefined;
 
-				const newUser = await createUser({
-					attributes: {
-						// attributes
-						username: userNameAvailable ? googleUser.name : nanoid(10),
+				const newUser = await prisma.authUser.create({
+					data: {
+						id: nanoid(),
+						username: userNameAvailable ? googleUserResult.name : alphanumericGenerator(10),
 						firstName: firstName ?? '',
 						lastName: lastName ?? '',
-						email: googleUser.email ?? '',
+						email: googleUserResult.email ?? '',
+						profilePicture: googleUserResult.picture ?? '',
 						is_verified: true,
-						is_admin: false
+						is_admin: false,
+						ipAddress
 					}
 				});
 				return newUser;
 			};
 			const loggedUser = await getUser();
-			const session = await auth.createSession({ userId: loggedUser.userId, attributes: {} });
-			ctx.authRequest.setSession(session);
+			const session = await auth.createSession(loggedUser.id, {});
+			ctx.cookies.set(auth.sessionCookieName, session.id, {
+				path: '/',
+				maxAge: 60 * 60
+			});
 
 			const unloggedId = ctx.cookies.get('unloggedinSession');
 			if (unloggedId) {
-				await transferUserData(prisma, loggedUser.userId, unloggedId);
+				await transferUserData(prisma, loggedUser.id, unloggedId);
 			}
 		}
-		throw redirect(302, '/');
+		redirect(302, '/');
 	}
-} satisfies APITypeB<'callback'>;
+} satisfies APIType['callback'];

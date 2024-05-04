@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let innerClass = '';
+	export let Class = '';
 	export let form = '';
 	export let value = '';
 	export let dynamicDisabled = false;
@@ -10,14 +10,14 @@
 {#if url}
 	<a href={url}>
 		{#if form === ''}
-			<button class="btn {innerClass}" on:click={onClick} {value} disabled={dynamicDisabled}>
+			<button class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
 				<slot />
 			</button>
 		{:else}
 			<button
 				on:submit|preventDefault
 				type="submit"
-				class="btn {innerClass}"
+				class="btn {Class}"
 				on:click={onClick}
 				disabled={dynamicDisabled}
 				{form}
@@ -28,14 +28,14 @@
 		{/if}
 	</a>
 {:else if form === ''}
-	<button class="btn {innerClass}" on:click={onClick} {value} disabled={dynamicDisabled}>
+	<button class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
 		<slot />
 	</button>
 {:else}
 	<button
 		on:submit|preventDefault
 		type="submit"
-		class="btn {innerClass}"
+		class="btn {Class}"
 		on:click={onClick}
 		disabled={dynamicDisabled}
 		{form}

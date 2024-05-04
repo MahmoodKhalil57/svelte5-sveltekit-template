@@ -5,14 +5,14 @@ export const transferUserData = async (
 	loggedUserId: string,
 	unloggedUserId: string
 ) => {
-	const userData = await p.user.findFirst({
+	const userData = await p.authUser.findFirst({
 		where: {
 			id: loggedUserId
 		}
-	}).hybridUserData;
+	}).hybridUser;
 	if (!userData) {
 		try {
-			await p.hybridUserData.update({
+			await p.hybridUser.update({
 				where: {
 					unloggedUserId: unloggedUserId
 				},
@@ -20,7 +20,7 @@ export const transferUserData = async (
 					unloggedUser: {
 						disconnect: true
 					},
-					user: {
+					AuthUser: {
 						connect: {
 							id: loggedUserId
 						}
