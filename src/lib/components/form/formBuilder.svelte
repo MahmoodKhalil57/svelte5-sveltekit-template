@@ -63,6 +63,7 @@
 		handleFlashMessageFunction: typeof handleFlashMessage
 	) => {
 		const submitForm = async (submitEvent: SubmitEvent) => {
+			let response: APIOutputType<R, P> | ApiClientError | undefined;
 			disabledButton = true;
 			let payload = formData;
 			let validationSuccess = true;
@@ -74,20 +75,24 @@
 					// @ts-expect-error this is fine.
 					payload = preValidationResponse.safePayload;
 				} else if (preValidationResponse.response) {
-					throw new Error(preValidationResponse.response.errorMessage);
+					validationSuccess = false;
+					inlineErrors = preValidationResponse.response.errorIssues ?? [];
 				}
 			}
-			const response = await submitFetchRequest(
-				route,
-				procedure,
-				payload as ReturnType<
-					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
-				>
-			);
-			const resStatus = await handleFlashMessageFunction(flashData, inlineErrors, response);
-			flashData = resStatus.flashData;
-			inlineErrors = resStatus.inlineErrors;
-			if (!resStatus.requestSuccess) {
+			if (validationSuccess) {
+				response = await submitFetchRequest(
+					route,
+					procedure,
+					payload as ReturnType<
+						typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
+					>
+				);
+				const resStatus = await handleFlashMessageFunction(flashData, inlineErrors, response);
+				flashData = resStatus.flashData;
+				inlineErrors = resStatus.inlineErrors;
+				validationSuccess = resStatus.requestSuccess;
+			}
+			if (!validationSuccess) {
 				const errorMessage = flashData?.message ?? inlineErrors?.[0]?.errorMessages?.[0] ?? '';
 				throw new Error(errorMessage);
 			} else {
