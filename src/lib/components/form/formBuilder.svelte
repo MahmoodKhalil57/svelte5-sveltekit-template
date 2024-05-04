@@ -38,6 +38,7 @@
 	export let inlineErrors: ErrorIssue[] = [];
 	export let disabledButton = false;
 	export let areYouSure = false;
+	export let Class = '';
 
 	type R = $$Generic<PublicRoutes>;
 	type P = $$Generic<PublicProcedures<R>>;
@@ -218,7 +219,7 @@
 
 <form
 	id="{route}/{String(procedure)}"
-	class="flex flex-col w-full max-w-xl gap-3 px-10 justify-center items-center"
+	class="flex flex-col w-full max-w-xl gap-3 px-10 justify-start items-center {Class}"
 	novalidate
 	on:input={formChange}
 	on:submit|preventDefault={(event) => onSubmit(event, handleFlashMessage)}
