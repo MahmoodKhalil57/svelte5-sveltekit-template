@@ -1,5 +1,6 @@
 /src/lib/utils/apiUtils/client/clientApiStructure.ts
 /prisma/schema.prod.prisma
+/prisma/dev.db
 
 .DS_Store
 node_modules
