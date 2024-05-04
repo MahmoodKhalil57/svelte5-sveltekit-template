@@ -18,7 +18,7 @@ export default {
 				message: ''
 			},
 			[responseStatus.SUCCESS]: {
-				data: { name: input.name }
+				data: { name: input.name, message: 'Success' }
 			}
 		});
 	},

@@ -9,15 +9,7 @@
 	export let value = '';
 </script>
 
-{#if field.type === InputTypeEnum.TEXT}
-	<DefaultInput
-		label={field.label}
-		type={field.type}
-		placeHolder={field.placeHolder}
-		id={field.id}
-		bind:value
-	/>
-{:else if field.type === InputTypeEnum.EMAIL}
+{#if [InputTypeEnum.TEXT, InputTypeEnum.EMAIL, InputTypeEnum.PASSWORD].includes(field.type)}
 	<DefaultInput
 		label={field.label}
 		type={field.type}

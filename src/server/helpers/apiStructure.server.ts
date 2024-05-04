@@ -7,7 +7,9 @@ export const apiStructure = {
 		testPost: {
 			requestType: 'POST',
 			middlewares: ['devProcedure'],
-			validation: z.object({ name: z.string() }) satisfies z.AnyZodObject
+			public: true,
+			validation: z.object({ name: z.string().min(1) }) satisfies z.AnyZodObject,
+			formStructure: [[{ id: 'name', type: 'TEXT', placeHolder: 'Name', label: 'Name' }]] as const
 		},
 		testGet: {
 			requestType: 'GET',

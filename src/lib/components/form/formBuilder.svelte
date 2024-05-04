@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { toastWrapper } from '$src/lib/utils/toastWrapper';
+
 	import { publicApiStructure } from '$src/lib/utils/apiUtils/client/clientApiStructure';
 
 	import type { APIInputType, APIOutputType } from '$lib/client/apiClient';
 	import { responseStatus } from '$lib/client/apiClient';
-
-	import { promiseToastV2 } from '$lib/utils/formUtils';
 
 	import FormErrorMessage from '$lib/components/form/formErrorMessage.svelte';
 	import FormFlashMessage from '$lib/components/form/formFlashMessage.svelte';
@@ -12,7 +12,8 @@
 		getFormStructureWithRouteProcedure,
 		getEmptyFormObject,
 		type ErrorIssue,
-		type ApiClientError
+		type ApiClientError,
+		validateZod
 	} from '$apiUtils/client/apiClientUtils';
 	import ButtonDefault from '$lib/components/ui/buttonDefault.svelte';
 	import FormElement from '$lib/components/form/formElement.svelte';
@@ -37,11 +38,19 @@
 	export let procedure: P;
 
 	export let formStructure = getFormStructureWithRouteProcedure(route, procedure) as Exclude<
-		ReturnType<typeof getFormStructureWithRouteProcedure>,
-		undefined
+		ReturnType<typeof getFormStructureWithRouteProcedure<R, P>>,
+		never[]
 	>;
 
 	export let formData = getEmptyFormObject(formStructure);
+
+	export let extraValidation:
+		| ((
+				payload: ReturnType<
+					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
+				>
+		  ) => ReturnType<typeof validateZod>)
+		| undefined = undefined;
 
 	const onSubmit = async (
 		submitEvent: SubmitEvent,
@@ -49,7 +58,13 @@
 	) => {
 		const submitForm = async (submitEvent: SubmitEvent) => {
 			disabledButton = true;
-			const response = await submitFetchRequest(route, procedure, formData as APIInputType<R, P>);
+			const response = await submitFetchRequest(
+				route,
+				procedure,
+				formData as ReturnType<
+					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
+				>
+			);
 			const resStatus = await handleFlashMessageFunction(flashData, inlineErrors, response);
 			flashData = resStatus.flashData;
 			inlineErrors = resStatus.inlineErrors;
@@ -68,11 +83,20 @@
 			}
 			return response;
 		};
-		await promiseToastV2(submitForm(submitEvent)).finally(() =>
-			setTimeout(() => {
-				disabledButton = false;
-			}, 1000)
-		);
+		toastWrapper()
+			.promise(submitForm(submitEvent), {
+				loading: 'Submitting...',
+				success: (res) => {
+					// @ts-ignore
+					return res?.body?.data?.message ?? 'Success';
+				},
+				error: 'Internal error.'
+			})
+			.finally(() =>
+				setTimeout(() => {
+					disabledButton = false;
+				}, 1000)
+			);
 	};
 
 	export const submitFetchRequest = async (
@@ -85,7 +109,7 @@
 		if (publicApiStructure[route]?.[procedure]?.validation) {
 			validate = true;
 		}
-		return await makeApiRequest('POST', route, procedure, formData, validate);
+		return await makeApiRequest('POST', route, procedure, formData, validate, extraValidation);
 	};
 
 	export let handleFlashMessage = async (
@@ -104,10 +128,15 @@
 		switch (response?.status) {
 			case responseStatus.SUCCESS:
 				requestSuccess = true;
+				// @ts-expect-error 2339
+				if (response?.body?.data?.message) {
+					// @ts-expect-error 2339
+					flashData = { message: response.body.data.message, color: 'text-green-400' };
+				}
 				break;
 			case responseStatus.INTERNAL_SERVER_ERROR:
 				// @ts-expect-error 2339
-				flashData = { message: response?.body?.message ?? 'Internal Server Error' };
+				flashData = { message: response?.body?.data?.message ?? 'Internal Server Error' };
 				break;
 			case responseStatus.VALIDATION_ERROR:
 				// @ts-expect-error 2339
@@ -123,6 +152,7 @@
 		resetSubmitEvent: () => void;
 		response: SuccessFullApiSend<R, P>;
 	}) => {
+		inlineErrors = [];
 		data.resetSubmitEvent();
 	};
 </script>

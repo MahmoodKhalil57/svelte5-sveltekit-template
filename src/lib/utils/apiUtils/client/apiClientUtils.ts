@@ -25,7 +25,8 @@ import zu from 'zod_utilz';
 export const InputTypeEnum = {
 	TEXT: 'TEXT',
 	EMAIL: 'EMAIL',
-	TEXTAREA: 'TEXTAREA'
+	TEXTAREA: 'TEXTAREA',
+	PASSWORD: 'PASSWORD'
 };
 
 const makeGetRequest = async <PT extends string, PL>(pt: PT, pl: PL, f: typeof fetch) => {
@@ -76,15 +77,15 @@ export const getFormStructureWithRouteProcedure = <
 	// @ts-ignore fs
 	const scheme = publicApiStructure?.[route]?.[procedure];
 	// @ts-ignore fs
-	const formStructure = scheme['formStructure'] as (typeof scheme)['formStructure'];
-	return formStructure;
+	const formStructure = scheme['formStructure'];
+	return formStructure ?? [];
 };
 
 export const getEmptyFormObject = <DynamicFormStructure extends FormStructure>(
 	formStructure: DynamicFormStructure
 ) => {
 	type FormObject = {
-		[key in (typeof formStructure)[number][number]['id']]: string;
+		[key in DynamicFormStructure[number][number]['id']]?: string;
 	};
 	return formStructure.flat().reduce((acc, field) => {
 		acc[field.id as keyof FormObject] = '';
@@ -128,7 +129,7 @@ export type ApiClientError = {
 };
 
 export const validateZod = async <Z extends z.AnyZodObject, P>(zodValidation: Z, payload: P) => {
-	let response: ApiClientError = {
+	let response: ApiClientError | undefined = {
 		errorMessage: 'Something went wrong',
 		status: responseStatus.VALIDATION_ERROR as const,
 		errorIssues: []
@@ -158,7 +159,11 @@ export const validateZod = async <Z extends z.AnyZodObject, P>(zodValidation: Z,
 		// @ts-ignore - this is fine
 		safePayload = validationErrors.data;
 	}
-	return { validationSuccess, response, safePayload };
+	return {
+		validationSuccess,
+		response: response as ApiClientError | undefined,
+		safePayload
+	};
 };
 
 export const makeApiRequest = async <
@@ -188,37 +193,43 @@ export const makeApiRequest = async <
 		status: responseStatus.VALIDATION_ERROR as const,
 		errorIssues: []
 	};
-	let validationSuccess = false;
+	let validationSuccess = null;
 	// @ts-expect-error this is fine.
 	const endpointType = getEndpointTypeWithRouteProcedure(route, procedure);
 	if (validate) {
+		if (extraValidation && payload) {
+			const extraValidationResponse = await extraValidation(payload);
+			validationSuccess = validationSuccess && extraValidationResponse.validationSuccess;
+			if (validationSuccess) {
+				// @ts-expect-error this is fine.
+				payload = extraValidationResponse.safePayload;
+			} else if (extraValidationResponse.response) {
+				response = {
+					errorMessage: extraValidationResponse?.response?.errorMessage || response.errorMessage,
+					errorIssues: [
+						...response.errorIssues,
+						...(extraValidationResponse?.response?.errorIssues ?? [])
+					],
+					status: responseStatus.VALIDATION_ERROR
+				};
+			}
+		}
+
 		// @ts-expect-error this is fine.
 		let zodValidation = getZodValidationWithRouteProcedure(route, procedure) as z.AnyZodObject;
 
-		if (zodValidation) {
+		if (zodValidation && validationSuccess !== false) {
 			if (endpointType === 'form' && payload instanceof FormData) {
 				// @ts-expect-error this is fine.
 				zodValidation = zu.useFormData(zodValidation) as z.AnyZodObject;
 			}
 			const validateZodResponse = await validateZod(zodValidation, payload);
 			validationSuccess = validateZodResponse.validationSuccess;
-			response = validateZodResponse.response;
-			safePayload = validateZodResponse?.safePayload;
-
-			if (extraValidation && safePayload) {
-				const extraValidationResponse = await extraValidation(safePayload);
-				validationSuccess = validationSuccess && extraValidationResponse.validationSuccess;
-				if (validationSuccess) {
-					// @ts-expect-error this is fine.
-					safePayload = extraValidationResponse.safePayload;
-				} else {
-					response = {
-						errorMessage: extraValidationResponse.response.errorMessage || response.errorMessage,
-						errorIssues: [...response.errorIssues, ...extraValidationResponse.response.errorIssues],
-						status: responseStatus.VALIDATION_ERROR
-					};
-				}
+			const viladiationResponse = validateZodResponse?.response;
+			if (viladiationResponse) {
+				response = viladiationResponse;
 			}
+			safePayload = validateZodResponse?.safePayload;
 
 			if (validationSuccess && endpointType === 'form' && payload instanceof Object) {
 				const formData = new FormData();

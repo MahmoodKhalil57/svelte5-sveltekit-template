@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { spring } from 'svelte/motion';
 	import { afterUpdate } from 'svelte';
-	import { getInlineErrors } from '$src/lib/utils/formUtils';
+	import type { ApiClientError } from '$src/lib/utils/apiUtils/client/apiClientUtils';
+
+	const getInlineErrors = (key: string, errorIssues: ApiClientError['errorIssues']) => {
+		let errorMessages: string[] | undefined;
+		const selectedError = errorIssues.find((val) => val.key === key);
+		if (selectedError) {
+			errorMessages = selectedError.errorMessages;
+		}
+		return errorMessages;
+	};
 
 	const size = spring();
 	export let fieldName: Parameters<typeof getInlineErrors>[0];

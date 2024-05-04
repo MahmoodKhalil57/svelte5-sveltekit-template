@@ -25,7 +25,16 @@
 			type="email"
 			name={id}
 			placeholder={placeHolder}
-			class="w-full input placeholder-base-300 bg-gray-100 !outline-none !border-none"
+			class="w-full !outline-none input input-bordered"
+			bind:value
+		/>
+	{:else if type === InputTypeEnum.PASSWORD}
+		<input
+			{id}
+			type="password"
+			name={id}
+			placeholder={placeHolder}
+			class="w-full !outline-none input input-bordered"
 			bind:value
 		/>
 	{/if}
