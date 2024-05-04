@@ -76,7 +76,7 @@ export default {
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
 				stores: { userAttributes: { set: userAttributes } },
-				clientRedirect: '/refreshLogin'
+				clientRedirect: ''
 			},
 			[responseStatus.PRECONDITION_FAILED]: { message: 'Account not verified.' },
 			[responseStatus.UNAUTHORIZED]: { message: 'Incorrect email or password.' },
@@ -257,7 +257,7 @@ export default {
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
 				stores: { userAttributes: { set: userAttributes } },
-				clientRedirect: '/refreshLogin'
+				clientRedirect: ''
 			},
 			[responseStatus.NOT_FOUND]: { message: 'Ivalid request, please generate new reset link.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
@@ -265,14 +265,13 @@ export default {
 	},
 	refreshUser: async ({ ctx, privateCtx }) => {
 		let userAttributes = privateCtx.userAttributes;
-		// eslint-disable-next-line prefer-const
-		ctx.status = privateCtx.userAttributes.id
-			? responseStatus.SUCCESS
-			: responseStatus.UNAUTHORIZED;
+		ctx.status = responseStatus.SUCCESS;
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { stores: { userAttributes: { set: userAttributes } } },
-			[responseStatus.UNAUTHORIZED]: { message: 'User not logged in.' }
+			[responseStatus.SUCCESS]: {
+				stores: { userAttributes: { set: userAttributes } },
+				clientRedirect: ''
+			}
 		});
 	},
 	emailCallback: async ({ ctx, privateCtx, input }) => {

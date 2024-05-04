@@ -347,7 +347,7 @@ export const apiStructure = {
 		},
 		refreshUser: {
 			requestType: 'POST',
-			middlewares: ['privateProcedure'],
+			middlewares: ['hybridUserProcedure'],
 			validation: z.object({}) satisfies z.AnyZodObject
 		},
 		emailCallback: {
