@@ -86,6 +86,7 @@
 				} else if (preValidationResponse.response) {
 					validationSuccess = false;
 					inlineErrors = preValidationResponse.response.errorIssues ?? [];
+					flashData = undefined;
 				}
 			}
 			if (validationSuccess) {
@@ -103,9 +104,12 @@
 			}
 			if (!validationSuccess) {
 				const errorMessage = flashData?.message ?? inlineErrors?.[0]?.errorMessages?.[0] ?? '';
+				flashData = null;
 				throw new Error(errorMessage);
 			} else {
 				const resetSubmitEvent = () => {
+					inlineErrors = [];
+					formData = getEmptyFormObject(formStructure);
 					// @ts-expect-error 2339
 					submitEvent?.target?.reset();
 				};
@@ -176,15 +180,17 @@
 					flashData = { message: response.body.data.message, color: 'text-green-400' };
 				}
 				break;
-			case responseStatus.INTERNAL_SERVER_ERROR:
-				// @ts-expect-error 2339
-				flashData = { message: response?.body?.data?.message ?? 'Internal Server Error' };
-				break;
 			case responseStatus.VALIDATION_ERROR:
+				flashData = undefined;
 				// @ts-expect-error 2339
 				inlineErrors = response?.errorIssues ?? [];
 				break;
 			default:
+				// @ts-expect-error 2339
+				if (response?.body?.data?.message) {
+					// @ts-expect-error 2339
+					flashData = { message: response?.body?.data?.message ?? 'Internal Server Error' };
+				}
 				break;
 		}
 		return { flashData: flashData, inlineErrors: inlineErrors, requestSuccess };
@@ -194,7 +200,6 @@
 		resetSubmitEvent: () => void;
 		response: SuccessFullApiSend<R, P>;
 	}) => {
-		inlineErrors = [];
 		data.resetSubmitEvent();
 	};
 
