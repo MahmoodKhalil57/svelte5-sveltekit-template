@@ -24,7 +24,7 @@
 </script>
 
 <footer
-	class="flex flex-col justify-between w-full h-full gap-8 px-10 py-4 border-t sm:gap-0 sm:flex-row bg-base-200 text-base-content border-base-300 min-h-footer"
+	class="z-20 relative flex flex-col justify-between w-full gap-8 px-10 py-4 border-t sm:gap-0 sm:flex-row bg-base-200 text-base-content border-base-300 min-h-footer"
 >
 	<div class="flex flex-col items-center sm:flex-row">
 		<a href="/">
@@ -48,7 +48,7 @@
 	<div class="flex justify-center w-full sm:w-auto">
 		<div class="flex gap-4 text-3xl">
 			<!-- svelte-ignore a11y-missing-content -->
-			<a href="https://github.com/MahmoodKhalil57/svelteTemplateV1" class="i-mdi-github" />
+			<a href="https://github.com/MahmoodKhalil57/svelteTemplate_V2" class="i-mdi-github" />
 		</div>
 	</div>
 </footer>
