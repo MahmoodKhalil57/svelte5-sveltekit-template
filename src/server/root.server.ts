@@ -5,6 +5,7 @@ import type { middlewareMap } from '$api/helpers/middleware.server';
 import testRouter from '$api/routes/testRouter.server';
 import authRouter from '$api/routes/authRouter.server';
 import callback from '$api/routes/callback.server';
+import type { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
 
 export const API = {
 	testRouter,
@@ -12,7 +13,12 @@ export const API = {
 	callback
 } satisfies APIType;
 
-export type APIType = ApiType<typeof apiStructure, typeof getContext, typeof middlewareMap>;
+export type APIType = ApiType<
+	typeof apiStructure,
+	typeof getContext,
+	typeof middlewareMap,
+	typeof serverStoreHandle
+>;
 
 export { responseStatus } from '$apiUtils/client/serverResponse';
 

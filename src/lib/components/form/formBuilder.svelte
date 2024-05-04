@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
+
 	import type { z } from 'zod';
 
 	import { toastWrapper } from '$src/lib/utils/toastWrapper';
@@ -137,7 +139,16 @@
 		if (publicApiStructure[route]?.[procedure]?.validation) {
 			validate = true;
 		}
-		return await makeApiRequest('POST', route, procedure, formData, validate, extraValidation);
+		return await makeApiRequest(
+			'POST',
+			route,
+			procedure,
+			formData,
+			validate,
+			extraValidation,
+			fetch,
+			serverStoreHandle
+		);
 	};
 
 	export let handleFlashMessage = async (

@@ -4,6 +4,7 @@
 	import { sessionUserStore } from '$lib/stores/userStore';
 	import { apiSend, responseStatus } from '$src/lib/client/apiClient';
 	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
+	import { serverTimeStore } from '$src/lib/stores/testStore';
 
 	let apiRespnseReceived = false;
 	const sendRequest = async () => {
@@ -21,4 +22,8 @@
 	<div class="flex-col gap-6 px-2 sm:pb-40 flex-center stretch">Hello</div>
 
 	<FormBuilder route="testRouter" procedure="testPost" />
+
+	<div>
+		Server time: {$serverTimeStore}
+	</div>
 </div>

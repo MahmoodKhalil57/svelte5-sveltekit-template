@@ -1,7 +1,7 @@
 import type { Cookies } from '@sveltejs/kit';
 import type { z, AnyZodObject } from 'zod';
 import type { responseStatus } from '../client/serverResponse';
-import type { InputTypeEnum, ApiClientError } from '../client/apiClientUtils';
+import type { InputTypeEnum, ApiClientError, ServerStoreHandle } from '../client/apiClientUtils';
 import type { endpoints } from './apiUtils.server';
 
 export type EndpointType = keyof typeof endpoints;
@@ -79,24 +79,23 @@ export type StructureProcedures<R extends StructureRoutes> = keyof ApiStructureS
 	MiddlewareMap<Awaited<ReturnType<GetContext>>>
 >[R];
 
-// import type { ComponentProps } from 'svelte';
-// import type FormBuilder from '$lib/components/form/formBuilder.svelte';
-// export type FormProps<
-// 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
-// 	R extends Routes<AS>,
-// 	P extends Procedures<AS, R>
-// > = ComponentProps<FormBuilder<R, P>>;
-
 export type RequestType = 'POST' | 'GET';
 export type FileType = {
 	name: string;
 	authority: 'private';
 }[];
 
-export type ServerResponse = Promise<{
+export type serverStoreActionInputs<STHDL extends ServerStoreHandle | undefined> = {
+	[K in keyof STHDL]: {
+		[K2 in keyof STHDL[K]]: STHDL[K][K2] extends (value: infer V) => void ? V : never;
+	};
+};
+
+export type ServerResponse<STHDL extends ServerStoreHandle | undefined> = Promise<{
 	body: {
 		message?: string;
 		data?: any;
+		stores?: serverStoreActionInputs<STHDL>;
 	};
 	status: responseStatus;
 }>;
@@ -104,7 +103,8 @@ export type ServerResponse = Promise<{
 export type ApiType<
 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 	GC extends GetContext,
-	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>
+	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
+	STHDL extends ServerStoreHandle | undefined
 > = {
 	[R in Routes<AS>]: {
 		[P in Procedures<AS, R>]: AS[R][P] extends { [key: string]: unknown }
@@ -113,7 +113,7 @@ export type ApiType<
 					args: ContextOutput<AS, R, P, GC, MP> & {
 						input: z.infer<AS[R][P]['validation']>;
 					}
-				) => ServerResponse
+				) => ServerResponse<STHDL>
 			: never;
 	};
 };

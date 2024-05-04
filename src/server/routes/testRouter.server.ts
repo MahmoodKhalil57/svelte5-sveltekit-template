@@ -18,7 +18,12 @@ export default {
 				message: ''
 			},
 			[responseStatus.SUCCESS]: {
-				data: { name: input.name, message: 'Success' }
+				data: { name: input.name, message: 'Success' },
+				stores: {
+					serverTime: {
+						set: new Date().getMilliseconds()
+					}
+				}
 			}
 		});
 	},
