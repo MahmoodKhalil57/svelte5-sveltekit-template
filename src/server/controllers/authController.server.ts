@@ -17,7 +17,22 @@ import {
 } from '$api/clients/mailerClient.server';
 import { parseJWT } from 'oslo/jwt';
 
-export { validateToken } from '$api/clients/luciaClient.server';
+export const validatAuthUserToken = async (token: string, invalidate = false) => {
+	if (invalidate) {
+		return validateToken(token);
+	} else {
+		return (
+			await prisma.authToken.findUnique({
+				where: {
+					id: token
+				},
+				select: {
+					authUser: true
+				}
+			})
+		)?.authUser;
+	}
+};
 
 let alphanumericGenerator = customAlphabet(
 	'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -220,7 +235,7 @@ export const verifyAuthUserEmail = async (code?: string, unloggedId?: string) =>
 	let session = null;
 	let user = null;
 	if (code && unloggedId) {
-		user = await validateToken(code);
+		user = await validatAuthUserToken(code, true);
 		if (user) {
 			user = await prisma.authUser.update({
 				where: {

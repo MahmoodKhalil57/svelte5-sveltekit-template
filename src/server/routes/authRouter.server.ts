@@ -11,7 +11,7 @@ import {
 	sessionCookieName,
 	updateUserPassword,
 	verifyEmailPassword,
-	validateToken,
+	validatAuthUserToken,
 	verifyAuthUserEmail,
 	continueWithGoogle
 } from '$api/controllers/authController.server';
@@ -141,7 +141,7 @@ export default {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 
 		try {
-			if (await validateToken(input.code.trim())) {
+			if (await validatAuthUserToken(input.code.trim())) {
 				ctx.status = responseStatus.SUCCESS;
 			}
 		} catch (e) {
@@ -152,7 +152,7 @@ export default {
 			[responseStatus.SUCCESS]: {
 				data: { code: input.code },
 				stores: { userAttributes: { set: privateCtx.userAttributes } },
-				clientRedirect: '/api/authRouter/email?code=' + input.code.trim()
+				clientRedirect: '/api/authRouter/emailCallback?code=' + input.code.trim()
 			},
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
@@ -201,7 +201,7 @@ export default {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 
 		try {
-			if (await validateToken(input.code.trim())) {
+			if (await validatAuthUserToken(input.code.trim())) {
 				ctx.status = responseStatus.SUCCESS;
 			}
 		} catch (e) {
@@ -220,17 +220,15 @@ export default {
 	},
 	resetPasswordEmail: async ({ ctx, input }) => {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
-		let userAttributes: Awaited<ReturnType<typeof validateToken>> | null = null;
-		let userKey: string | null = null;
+		let userAttributes: Awaited<ReturnType<typeof validatAuthUserToken>> | null = null;
 
 		try {
-			userAttributes = await validateToken(input.code ?? '');
-			userKey = userAttributes.id;
+			userAttributes = await validatAuthUserToken(input.code ?? '', true);
 		} catch (e) {
 			ctx.status = responseStatus.NOT_FOUND;
 		}
 
-		if (userKey) {
+		if (userAttributes) {
 			try {
 				if (userAttributes) {
 					const updateUserPasswordResonse = await updateUserPassword(

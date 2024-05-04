@@ -29,13 +29,13 @@ export const sendEmailVerificationEmail = async (to: string, token: string) => {
 		await sendMail(
 			to,
 			'Verify your account',
-			`Your verification passcode is: ${token}, your verification link is: ${e.WEBSITE_URL()}/authRouter/email?code=${token}`,
+			`Your verification passcode is: ${token}, your verification link is: ${e.WEBSITE_URL()}/authRouter/emailCallback?code=${token}`,
 			`<b>Your verification passcode is: ${token}</b>
 			<br>
-			<b>Your verification link is: <a href="${e.WEBSITE_URL()}/authRouter/email?code=${token}">Click here to verify</a></b>
+			<b>Your verification link is: <a href="${e.WEBSITE_URL()}/authRouter/emailCallback?code=${token}">Click here to verify</a></b>
 			<br>
 			Or copy and paste this link into your browser:
-			<a href="${e.WEBSITE_URL()}/authRouter/email?code=${token}">${e.WEBSITE_URL()}/authRouter/email?code=${token}</a>
+			<a href="${e.WEBSITE_URL()}/authRouter/emailCallback?code=${token}">${e.WEBSITE_URL()}/authRouter/emailCallback?code=${token}</a>
 			`
 		);
 	} catch (e) {

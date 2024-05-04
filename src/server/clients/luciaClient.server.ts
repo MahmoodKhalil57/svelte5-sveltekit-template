@@ -44,7 +44,7 @@ const GOOGLE_SECRET = env.GOOGLE_SECRET();
 const WEBSITE_URL = env.WEBSITE_URL();
 export const googleAuth =
 	GOOGLE_ID && GOOGLE_SECRET && WEBSITE_URL
-		? new Google(GOOGLE_ID, GOOGLE_SECRET, WEBSITE_URL + '/api/authRouter/google')
+		? new Google(GOOGLE_ID, GOOGLE_SECRET, WEBSITE_URL + '/api/authRouter/googleCallback')
 		: undefined;
 
 // export const emailVerificationToken = idToken(auth, 'email_verification', {
