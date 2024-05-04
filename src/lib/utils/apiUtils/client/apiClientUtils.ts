@@ -176,7 +176,8 @@ export const makeApiRequest = async <
 		? FormData
 		: APIInput<AS, R, P>,
 	V extends HasValidate<AS, R, P>,
-	E extends (payload: T) => ReturnType<typeof validateZod>
+	E extends (payload: T) => ReturnType<typeof validateZod>,
+	STHDL extends ServerStoreHandle
 >(
 	requestType: RT,
 	route: R,
@@ -184,11 +185,16 @@ export const makeApiRequest = async <
 	payload: T,
 	validate: V,
 	extraValidation?: E,
-	f?: typeof fetch
+	f?: typeof fetch,
+	serverStoreHandle?: STHDL
 ) => {
 	let safePayload: T | undefined = undefined;
 	let response:
-		| APIOutput<R, P, ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>>>
+		| APIOutput<
+				R,
+				P,
+				ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>, STHDL>
+		  >
 		| ApiClientError = {
 		errorMessage: 'Something went wrong',
 		status: responseStatus.VALIDATION_ERROR as const,
@@ -285,7 +291,7 @@ export const makeApiRequest = async <
 			).json()) as APIOutput<
 				R,
 				P,
-				ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>>
+				ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>, STHDL>
 			>;
 		} else if (requestType === 'GET') {
 			// @ts-ignore rt
@@ -293,23 +299,53 @@ export const makeApiRequest = async <
 				response = (await memoizedGet(path, safePayload, f ?? fetch)) as APIOutput<
 					R,
 					P,
-					ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>>
+					ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>, STHDL>
 				>;
 			} else {
 				response = (await makeGetRequest(path, safePayload, f ?? fetch)) as APIOutput<
 					R,
 					P,
-					ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>>
+					ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>, STHDL>
 				>;
 			}
 		}
 	}
 
+	if (serverStoreHandle && response.status === responseStatus.SUCCESS && response?.body?.stores) {
+		// @ts-ignore - this is fine
+		handleStoreResponse(serverStoreHandle, response.body.stores);
+	}
+
 	return response as V extends false
-		? APIOutput<R, P, ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>>>
+		? APIOutput<
+				R,
+				P,
+				ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>, STHDL>
+			>
 		:
-				| APIOutput<R, P, ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>>>
+				| APIOutput<
+						R,
+						P,
+						ApiType<AS, GetContext, MiddlewareMap<Awaited<ReturnType<GetContext>>>, STHDL>
+				  >
 				| ApiClientError;
+};
+
+export type ServerStoreHandle = {
+	[key: string]: {
+		[key: string]: (value: any) => Promise<void>;
+	};
+};
+
+const handleStoreResponse = (
+	serverStoreHandle: ServerStoreHandle,
+	stores: { [key: string]: { [key: string]: {} } }
+) => {
+	Object.entries(stores).forEach(([storeName, store]) => {
+		Object.entries(store).forEach(([storeAction, value]) => {
+			serverStoreHandle[storeName][storeAction](value);
+		});
+	});
 };
 
 // The recursive type
@@ -375,42 +411,49 @@ export type ProxyDataType<
 		: ProxyDataType<AS, T[K], K>;
 };
 
-export const handlerBuilder = <F extends typeof fetch, T>(f?: F, path: string[] = []) => {
-	return {
-		get(target: T, prop: keyof T | RequestType): any {
-			let requestType: RequestType | undefined = undefined;
-			if (prop === 'POST') {
-				requestType = 'POST';
-			}
-			if (prop === 'GET') {
-				requestType = 'GET';
-			}
-
-			if (requestType) {
-				return async (
-					input: any,
-					validate: boolean = false,
-					extraValidation?: (payload: T) => ReturnType<typeof validateZod>
-				) => {
-					return await makeApiRequest(
-						requestType!,
-						path[0] as any,
-						path[1] as any,
-						input,
-						validate,
-						extraValidation,
-						f
-					);
-				};
-			}
-			return new Proxy({} as T, handlerBuilder<F, any>(f, [...path, prop as string]));
+export const handlerBuilder = <F extends typeof fetch, STHDL extends ServerStoreHandle, T>(
+	f?: F,
+	serverStoreHandle?: STHDL,
+	path: string[] = []
+) => ({
+	get(target: T, prop: keyof T | RequestType): any {
+		let requestType: RequestType | undefined = undefined;
+		if (prop === 'POST') {
+			requestType = 'POST';
 		}
-	};
-};
+		if (prop === 'GET') {
+			requestType = 'GET';
+		}
+
+		if (requestType) {
+			return async (
+				input: any,
+				validate: boolean = false,
+				extraValidation?: (payload: T) => ReturnType<typeof validateZod>
+			) =>
+				await makeApiRequest(
+					requestType!,
+					path[0] as any,
+					path[1] as any,
+					input,
+					validate,
+					extraValidation,
+					f,
+					serverStoreHandle
+				);
+		}
+		return new Proxy(
+			{} as T,
+			handlerBuilder<F, STHDL, any>(f, serverStoreHandle, [...path, prop as string])
+		);
+	}
+});
 
 export const apiSendBuilder = <
 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
-	API
+	API,
+	STHDL extends ServerStoreHandle | undefined
 >(
-	f?: typeof fetch
-) => new Proxy({}, handlerBuilder(f)) as ProxyDataType<AS, API, undefined>;
+	f?: typeof fetch,
+	serverStoreHandle?: STHDL
+) => new Proxy({}, handlerBuilder(f, serverStoreHandle)) as ProxyDataType<AS, API, undefined>;

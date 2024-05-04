@@ -11,7 +11,7 @@ import {
 } from '@sveltejs/kit';
 import type { z } from 'zod';
 import { responseStatus } from '../client/serverResponse';
-import type { ErrorIssue } from '../client/apiClientUtils';
+import type { ErrorIssue, ServerStoreHandle } from '../client/apiClientUtils';
 import type {
 	RequestType,
 	Routes,
@@ -22,7 +22,8 @@ import type {
 	StructureRoutes,
 	StructureProcedures,
 	ApiType,
-	EndpointType
+	EndpointType,
+	serverStoreActionInputs
 } from '../server/ApiUtils.type.server';
 import { zu } from 'zod_utilz';
 
@@ -158,17 +159,19 @@ export const getError = <S extends responseStatus, B>(status: S, body: B) => {
 	};
 };
 
-type ResponseType<Mapping extends { [key in keyof Mapping]: unknown }> = {
-	[S in keyof Mapping]: {
-		status: S;
-		body: Mapping[S];
-	};
-}[keyof Mapping];
-
-export const getResponse = <S extends responseStatus, R extends { [key in S]: unknown }>(
+export const getResponse = <
+	S extends responseStatus,
+	R extends {
+		[key in S]: {
+			message?: string;
+			data?: any;
+			stores?: serverStoreActionInputs<ServerStoreHandle>;
+		};
+	}
+>(
 	status: S,
 	serverReturns: R
-): ResponseType<R> => {
+) => {
 	return {
 		status,
 		body: serverReturns[status]
@@ -201,12 +204,13 @@ export const svelteApiHandle =
 	<
 		AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 		GC extends GetContext,
-		MP extends MiddlewareMap<Awaited<ReturnType<GC>>>
+		MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
+		STHDL extends ServerStoreHandle | undefined
 	>(
 		apiStructure: AS,
 		getContext: GC,
 		middlewareMap: MP,
-		API: ApiType<AS, GC, MP>,
+		API: ApiType<AS, GC, MP, STHDL>,
 		cookieVersion = '0.0.0'
 	): Handle =>
 	async ({ event, resolve }) => {
@@ -272,7 +276,8 @@ export const svelteApiHandle =
 export const handleRequest = async <
 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 	GC extends GetContext,
-	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>
+	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
+	STHDL extends ServerStoreHandle | undefined
 >(
 	url: URL,
 	request: Request,
@@ -281,7 +286,7 @@ export const handleRequest = async <
 	apiStructure: AS,
 	getContext: GC,
 	middlewareMap: MP,
-	API: ApiType<AS, GC, MP>
+	API: ApiType<AS, GC, MP, STHDL>
 ) => {
 	if (!['GET', 'POST'].includes(request.method)) {
 		// method not allowed
