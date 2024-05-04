@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { z } from 'zod';
+
 	import { toastWrapper } from '$src/lib/utils/toastWrapper';
 
 	import { publicApiStructure } from '$src/lib/utils/apiUtils/client/clientApiStructure';
@@ -44,12 +46,16 @@
 
 	export let formData = getEmptyFormObject(formStructure);
 
-	export let extraValidation:
+	export let preValidation:
 		| ((
 				payload: ReturnType<
 					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
 				>
-		  ) => ReturnType<typeof validateZod>)
+		  ) => ReturnType<typeof validateZod<z.AnyZodObject, APIInputType<R, P>>>)
+		| undefined = undefined;
+
+	export let extraValidation:
+		| ((payload: APIInputType<R, P>) => ReturnType<typeof validateZod>)
 		| undefined = undefined;
 
 	const onSubmit = async (
@@ -58,10 +64,23 @@
 	) => {
 		const submitForm = async (submitEvent: SubmitEvent) => {
 			disabledButton = true;
+			let payload = formData;
+			let validationSuccess = true;
+			if (preValidation && formData) {
+				// @ts-expect-error this is fine.
+				const preValidationResponse = await preValidation(formData);
+				validationSuccess = validationSuccess && preValidationResponse.validationSuccess;
+				if (validationSuccess) {
+					// @ts-expect-error this is fine.
+					payload = preValidationResponse.safePayload;
+				} else if (preValidationResponse.response) {
+					throw new Error(preValidationResponse.response.errorMessage);
+				}
+			}
 			const response = await submitFetchRequest(
 				route,
 				procedure,
-				formData as ReturnType<
+				payload as ReturnType<
 					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
 				>
 			);
