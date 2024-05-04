@@ -12,7 +12,7 @@
 	};
 </script>
 
-<div class="w-full flex flex-col justify-center items-center">
+<section class="w-full flex flex-col justify-center items-center">
 	<button on:click={sendRequest}> Test Api </button>
 	{apiRespnseReceived ? 'SUCCESS' : ''}
 
@@ -23,4 +23,4 @@
 	<div>
 		Server time: {$serverTimeStore}
 	</div>
-</div>
+</section>

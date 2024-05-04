@@ -5,7 +5,7 @@
 	import { userAttributesStore } from '$src/lib/stores/userStore';
 </script>
 
-<div class="header">
+<header class="header min-h-header w-full">
 	<div class="relative flex justify-center sm:justify-between navbar bg-base-100">
 		<a href="/"><Logo /></a>
 		<div class="flex-none hidden sm:block">
@@ -37,4 +37,4 @@
 			/>
 		</div>
 	</div>
-</div>
+</header>

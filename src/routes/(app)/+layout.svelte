@@ -4,16 +4,10 @@
 	import { Toaster } from 'svelte-french-toast';
 </script>
 
-<div class="w-full min-h-screen-new">
-	<div class="w-full min-h-header">
-		<Header />
-	</div>
-	<div class="flex justify-center stretch min-h-page">
-		<slot />
-	</div>
-	<div class="w-full min-h-footer">
-		<Footer />
-	</div>
-</div>
+<Header />
+<main class="flex justify-center stretch min-h-page">
+	<slot />
+</main>
+<Footer />
 
 <Toaster />
