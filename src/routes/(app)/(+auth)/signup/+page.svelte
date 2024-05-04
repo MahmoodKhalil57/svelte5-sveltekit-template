@@ -6,15 +6,19 @@
 	import ContinueWithGoogle from '$src/lib/components/form/continueWithGoogle.svelte';
 
 	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'signUpEmail'>>;
-	type ExtraValidation = FormComponent['extraValidation'];
+	type PreValidation = FormComponent['preValidation'];
 	type OnSuccess = FormComponent['onSuccess'];
 
-	const extraValidation: ExtraValidation = async (payload) => {
-		if (payload.password == payload.confirmPassword) {
-			payload.confirmPassword = undefined;
+	export const preValidation: PreValidation = async (payload) => {
+		if (!payload.password || payload.password === payload.confirmPassword) {
 			return {
 				validationSuccess: true,
-				safePayload: payload,
+				safePayload: {
+					email: payload.email ?? '',
+					firstName: payload.firstName ?? '',
+					lastName: payload.lastName ?? '',
+					password: payload.password ?? ''
+				},
 				response: undefined
 			};
 		}
@@ -28,6 +32,7 @@
 			}
 		};
 	};
+
 	const onSuccess: OnSuccess = async ({ response }) => {
 		goto('/signup/verify');
 	};
@@ -41,7 +46,7 @@
 	</h1>
 
 	<div class="w-full flex flex-col items-center justify-center">
-		<FormBuilder route="authRouter" procedure="signUpEmail" {extraValidation} {onSuccess} />
+		<FormBuilder route="authRouter" procedure="signUpEmail" {preValidation} {onSuccess} />
 		<div class="w-full flex justify-center text-[13px]">
 			<div>Already have an account?</div>
 			<a href="/login" class="underline font-extrabold">Login.</a>
