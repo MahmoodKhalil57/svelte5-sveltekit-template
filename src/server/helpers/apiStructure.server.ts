@@ -349,10 +349,8 @@ export const apiStructure = {
 			requestType: 'POST',
 			middlewares: ['privateProcedure'],
 			validation: z.object({}) satisfies z.AnyZodObject
-		}
-	},
-	callback: {
-		email: {
+		},
+		emailCallback: {
 			requestType: 'GET',
 			endpointType: 'callback',
 			middlewares: ['hybridUserProcedure'],
@@ -360,7 +358,7 @@ export const apiStructure = {
 				code: z.string()
 			}) satisfies z.AnyZodObject
 		},
-		google: {
+		googleCallback: {
 			requestType: 'GET',
 			endpointType: 'callback',
 			middlewares: ['hybridUserProcedure'],

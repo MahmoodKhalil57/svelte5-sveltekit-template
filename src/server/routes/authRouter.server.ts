@@ -1,42 +1,30 @@
-import { prisma } from '$api/clients/prisma.server';
-import {
-	auth,
-	generateVerificationToken,
-	getUserAttributes,
-	googleAuth,
-	validateToken
-} from '$api/clients/luciaClient.server';
-import {
-	sendEmailResetPassword,
-	sendEmailVerificationEmail
-} from '$api/clients/mailerClient.server';
-import { transferUserData } from '$api/controllers/userData.server';
 import { dev } from '$app/environment';
-import { customAlphabet, nanoid } from 'nanoid';
 import { getResponse, responseStatus, type APIType } from '$api/root.server';
-import { Argon2id } from 'oslo/password';
-import type { User } from 'lucia';
-import { generateCodeVerifier, generateState } from 'arctic';
-
-let alphanumericGenerator = customAlphabet(
-	'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-	10
-);
+import {
+	createUserAndSendEmail,
+	deleteUser,
+	generateAndSendVerificationEmail,
+	generateGoogleSignOnData,
+	getAuthUserByEmail,
+	invalidateSession,
+	loginEmailPassword,
+	sessionCookieName,
+	updateUserPassword,
+	verifyEmailPassword,
+	validateToken,
+	verifyAuthUserEmail,
+	continueWithGoogle
+} from '$api/controllers/authController.server';
+import { redirect } from '@sveltejs/kit';
 
 export default {
 	signOnGoogle: async ({ ctx, privateCtx }) => {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 
-		let redirectUrl: URL | undefined = undefined;
-		if (googleAuth !== undefined) {
-			// const [url, state] = await googleAuth.getAuthorizationUrl();
-			const state = generateState();
-			const codeVerifier = generateCodeVerifier();
-			const url = await googleAuth.createAuthorizationURL(state, codeVerifier, {
-				scopes: ['email', 'profile']
-			});
-			redirectUrl = url;
+		const googleSignOnData = await generateGoogleSignOnData();
+		const { state, codeVerifier, redirectUrl } = googleSignOnData ?? {};
 
+		if (codeVerifier && state) {
 			ctx.cookies.set('google_oauth_code_verifier', codeVerifier, {
 				secure: !dev,
 				path: '/',
@@ -61,77 +49,27 @@ export default {
 	},
 	signInEmail: async ({ ctx, input }) => {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
-		let userAttributes: User | null = null;
-		let userId: string | null = null;
+		let userAttributes: Awaited<ReturnType<typeof loginEmailPassword>>['user'] | null = null;
 		try {
-			const latestAuthKeyRecord = await prisma.authKey.findFirst({
-				where: {
-					authUser: {
-						email: input.email
-					}
-				},
-				orderBy: {
-					created: 'desc'
-				}
-			});
-			let hashExists = false;
-			const argon2id = new Argon2id();
+			const verifiedUser = await verifyEmailPassword(input.email, input.password);
+			if (verifiedUser) {
+				if (verifiedUser.is_verified) {
+					const unloggedId = ctx.cookies.get('unloggedinSession');
 
-			if (latestAuthKeyRecord?.hashed_password && !hashExists) {
-				const verifiedKey = await argon2id.verify(
-					latestAuthKeyRecord.hashed_password,
-					input.password
-				);
-				if (verifiedKey) {
-					userId = latestAuthKeyRecord.user_id;
-					hashExists = true;
-				}
-			}
-			if (!hashExists) {
-				throw new Error('Incorrect email or password.');
-			}
-		} catch (e) {
-			// https://lucia-auth.com/reference/lucia-auth/auth?sveltekit#usekey
-			ctx.status = responseStatus.UNAUTHORIZED;
-		}
-		if (userId) {
-			try {
-				const is_verified = (
-					await prisma.authUser.findFirst({
-						where: {
-							id: userId
-						},
-						select: {
-							is_verified: true
-						}
-					})
-				)?.is_verified;
-				if (is_verified) {
-					// Invalidate all sessions and create a new one
-					await auth.invalidateUserSessions(userId);
-					const session = await auth.createSession(userId, {});
-					// ctx.authRequest.setSession(session);
-					ctx.cookies.set(auth.sessionCookieName, session.id, {
+					const loginEmailPasswordRes = await loginEmailPassword(verifiedUser.id, unloggedId);
+					userAttributes = loginEmailPasswordRes.user;
+					ctx.cookies.set(sessionCookieName, loginEmailPasswordRes.session.id, {
 						path: '/',
 						maxAge: 60 * 60
 					});
-
-					const { user } = (await auth.validateSession(session.id)) ?? null;
-					userAttributes = user;
-
-					const unloggedId = ctx.cookies.get('unloggedinSession');
-					if (unloggedId) {
-						await transferUserData(prisma, userId, unloggedId);
-					}
 
 					ctx.status = responseStatus.SUCCESS;
 				} else {
 					ctx.status = responseStatus.PRECONDITION_FAILED;
 				}
-			} catch (e) {
-				ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 			}
-		} else {
+		} catch (e) {
+			// https://lucia-auth.com/reference/lucia-auth/auth?sveltekit#usekey
 			ctx.status = responseStatus.UNAUTHORIZED;
 		}
 
@@ -149,71 +87,34 @@ export default {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 		const ipAddress = ctx.request.headers.get('x-forwarded-for') || ctx.getClientAddress();
 
-		const createUserAndSendEmail = async (prInput: typeof input) => {
-			// create user
-			const argon2id = new Argon2id();
-			const hash = await argon2id.hash(prInput.password);
-
-			const authUserRecord = await prisma.authUser.create({
-				data: {
-					id: nanoid(),
-					username: alphanumericGenerator(10),
-					firstName: prInput.firstName,
-					lastName: prInput.lastName,
-					email: prInput.email,
-					profilePicture: '',
-					is_verified: false,
-					is_admin: false,
-					ipAddress
-				}
-			});
-
-			await prisma.authKey.create({
-				data: {
-					id: nanoid(),
-					authUser: {
-						connect: {
-							id: authUserRecord.id
-						}
-					},
-					hashed_password: hash
-				}
-			});
-			const luciaUser = getUserAttributes(authUserRecord);
-			const user = {
-				id: luciaUser.id,
-				is_verified: false,
-				username: luciaUser.username,
-				firstName: luciaUser.firstName,
-				lastName: luciaUser.lastName,
-				email: luciaUser.email,
-				profilePicture: luciaUser.profilePicture
-			};
-
-			// send email verification
-			const token = await generateVerificationToken(user.id);
-			await sendEmailVerificationEmail(user.email, token);
-		};
-
 		try {
-			const user = await prisma.authUser.findUnique({
-				where: { email: input.email }
-			});
+			const user = await getAuthUserByEmail(input.email);
 			if (!user) {
-				await createUserAndSendEmail(input);
+				await createUserAndSendEmail(
+					input.firstName,
+					input.lastName,
+					input.email,
+					input.password,
+					'',
+					false,
+					false,
+					ipAddress
+				);
 				// set status
 				ctx.status = responseStatus.SUCCESS;
 			} else if (user.is_verified == false) {
-				// delete user if user is not verified
-				await auth.invalidateSession(user.id);
-				// await auth.invalidateAllUserSessions(user.id);
-				await prisma.authUser.delete({
-					where: {
-						id: user.id
-					}
-				});
+				await deleteUser(user);
 
-				await createUserAndSendEmail(input);
+				await createUserAndSendEmail(
+					input.firstName,
+					input.lastName,
+					input.email,
+					input.password,
+					'',
+					false,
+					false,
+					ipAddress
+				);
 				// set status
 				ctx.status = responseStatus.SUCCESS;
 			} else if (user.is_verified == true) {
@@ -240,12 +141,7 @@ export default {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 
 		try {
-			const codeRow = await prisma.authToken.findUnique({
-				where: {
-					id: input.code.trim()
-				}
-			});
-			if (codeRow) {
+			if (await validateToken(input.code.trim())) {
 				ctx.status = responseStatus.SUCCESS;
 			}
 		} catch (e) {
@@ -256,19 +152,17 @@ export default {
 			[responseStatus.SUCCESS]: {
 				data: { code: input.code },
 				stores: { userAttributes: { set: privateCtx.userAttributes } },
-				clientRedirect: '/api/callback/email?code=' + input.code.trim()
+				clientRedirect: '/api/authRouter/email?code=' + input.code.trim()
 			},
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
 		});
 	},
 	signOut: async ({ ctx }) => {
-		const sessionToken = ctx.cookies.get(auth.sessionCookieName) ?? '';
-		await auth.invalidateSession(sessionToken);
+		const sessionToken = ctx.cookies.get(sessionCookieName) ?? '';
+		await invalidateSession(sessionToken);
 
-		auth.invalidateSession(sessionToken);
-
-		ctx.cookies.set(auth.sessionCookieName, '', {
+		ctx.cookies.set(sessionCookieName, '', {
 			path: '/',
 			maxAge: 1
 		});
@@ -282,13 +176,10 @@ export default {
 	sendResetPasswordEmail: async ({ ctx, privateCtx, input }) => {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 
-		const authUserRecord = await prisma.authUser.findUnique({
-			where: { email: input.email }
-		});
-		if (authUserRecord) {
+		const authUser = await getAuthUserByEmail(input.email);
+		if (authUser) {
 			try {
-				const token = await generateVerificationToken(authUserRecord.id);
-				await sendEmailResetPassword(authUserRecord.email, token.toString());
+				await generateAndSendVerificationEmail(authUser);
 				ctx.status = responseStatus.SUCCESS;
 			} catch (e) {
 				ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
@@ -310,12 +201,7 @@ export default {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
 
 		try {
-			const codeRow = await prisma.authToken.findUnique({
-				where: {
-					id: input.code.trim()
-				}
-			});
-			if (codeRow) {
+			if (await validateToken(input.code.trim())) {
 				ctx.status = responseStatus.SUCCESS;
 			}
 		} catch (e) {
@@ -347,31 +233,17 @@ export default {
 		if (userKey) {
 			try {
 				if (userAttributes) {
-					await auth.invalidateUserSessions(userAttributes.id);
+					const updateUserPasswordResonse = await updateUserPassword(
+						userAttributes,
+						input.password
+					);
 
-					// update key
-					const argon2id = new Argon2id();
-					const hash = await argon2id.hash(input.password);
-					await prisma.authKey.create({
-						data: {
-							id: nanoid(),
-							authUser: {
-								connect: {
-									id: userAttributes.id
-								}
-							},
-							hashed_password: hash
-						}
-					});
+					userAttributes = updateUserPasswordResonse.user;
 
-					const session = await auth.createSession(userAttributes.id, {});
-
-					ctx.cookies.set(auth.sessionCookieName, session.id, {
+					ctx.cookies.set(sessionCookieName, updateUserPasswordResonse.session.id, {
 						path: '/',
 						maxAge: 60 * 60
 					});
-					const { user } = await auth.validateSession(session.id);
-					userAttributes = user;
 
 					ctx.status = responseStatus.SUCCESS;
 				} else {
@@ -394,9 +266,7 @@ export default {
 		});
 	},
 	refreshUser: async ({ ctx, privateCtx }) => {
-		let userAttributes: User | null = null;
-
-		userAttributes = privateCtx.userAttributes;
+		let userAttributes = privateCtx.userAttributes;
 		// eslint-disable-next-line prefer-const
 		ctx.status = privateCtx.userAttributes.id
 			? responseStatus.SUCCESS
@@ -406,5 +276,53 @@ export default {
 			[responseStatus.SUCCESS]: { stores: { userAttributes: { set: userAttributes } } },
 			[responseStatus.UNAUTHORIZED]: { message: 'User not logged in.' }
 		});
+	},
+	emailCallback: async ({ ctx, privateCtx, input }) => {
+		if (!privateCtx.userAttributes?.id) {
+			try {
+				const unloggedId = ctx.cookies.get('unloggedinSession') as string | undefined;
+				const verifyAuthUserEmailResponse = await verifyAuthUserEmail(input.code, unloggedId);
+				if (verifyAuthUserEmailResponse?.session) {
+					ctx.cookies.set(sessionCookieName, verifyAuthUserEmailResponse.session.id, {
+						path: '/',
+						maxAge: 60 * 60
+					});
+				}
+			} catch (e) {
+				// invalid code
+				return { body: { message: 'Invalid code' }, status: responseStatus.UNAUTHORIZED };
+			}
+		}
+		redirect(302, '/');
+	},
+	googleCallback: async ({ ctx, privateCtx, input }) => {
+		let session = undefined;
+		let userAttributes = privateCtx.userAttributes;
+		const codeVerifierCookie = ctx.cookies.get('google_oauth_code_verifier') ?? '';
+		const storedState = ctx.cookies.get('google_oauth_state');
+		const ipAddress = ctx.request.headers.get('x-forwarded-for') || ctx.getClientAddress();
+		const unloggedId = ctx.cookies.get('unloggedinSession');
+
+		if (!userAttributes) {
+			const continueWithGoogleResponse = await continueWithGoogle(
+				storedState,
+				codeVerifierCookie,
+				input.state,
+				input.code,
+				unloggedId,
+				ipAddress
+			);
+			session = continueWithGoogleResponse.session;
+			userAttributes = continueWithGoogleResponse.user;
+		}
+
+		if (session) {
+			ctx.cookies.set(sessionCookieName, session.id, {
+				path: '/',
+				maxAge: 60 * 60
+			});
+		}
+
+		redirect(302, '/');
 	}
 } satisfies APIType['authRouter'];

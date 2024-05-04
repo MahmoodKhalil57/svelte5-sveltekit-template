@@ -4,13 +4,11 @@ import type { getContext } from '$api/helpers/context.server';
 import type { middlewareMap } from '$api/helpers/middleware.server';
 import testRouter from '$api/routes/testRouter.server';
 import authRouter from '$api/routes/authRouter.server';
-import callback from '$api/routes/callback.server';
 import type { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
 
 export const API = {
 	testRouter,
-	authRouter,
-	callback
+	authRouter
 } satisfies APIType;
 
 export type APIType = ApiType<
