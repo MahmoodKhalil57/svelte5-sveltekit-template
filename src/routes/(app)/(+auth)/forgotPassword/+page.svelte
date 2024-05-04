@@ -1,14 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
-	import type { ComponentProps } from 'svelte';
-
-	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'sendResetPasswordEmail'>>;
-	type OnSuccess = FormComponent['onSuccess'];
-
-	export const onSuccess: OnSuccess = async ({ response }) => {
-		goto('/forgotPassword/verify');
-	};
 </script>
 
 <div class="flex flex-col w-full pt-10 pb-20">

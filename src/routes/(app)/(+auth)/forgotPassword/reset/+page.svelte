@@ -9,27 +9,23 @@
 
 	export let data: PageData;
 
-	export const preValidation: PreValidation = async (payload) => {
-		if (payload.password === payload.confirmPassword) {
-			return {
-				validationSuccess: true,
-				safePayload: {
-					code: data.codeId ?? '',
-					password: payload.password ?? ''
-				},
-				response: undefined
-			};
-		}
-		return {
-			validationSuccess: false,
-			safePayload: undefined,
-			response: {
-				errorMessage: 'Validation Error',
-				status: responseStatus.VALIDATION_ERROR,
-				errorIssues: [{ key: 'password', errorMessages: ['Passwords do not match'] }]
-			}
-		};
-	};
+	export const preValidation: PreValidation = async (payload) =>
+		!payload.password || payload.password === payload.confirmPassword
+			? {
+					validationSuccess: true,
+					safePayload: {
+						code: data.codeId ?? '',
+						password: payload.password ?? ''
+					}
+				}
+			: {
+					validationSuccess: false,
+					response: {
+						errorMessage: 'Validation Error',
+						status: responseStatus.VALIDATION_ERROR,
+						errorIssues: [{ key: 'password', errorMessages: ['Passwords do not match'] }]
+					}
+				};
 </script>
 
 <div class="flex flex-col w-full pt-10 pb-2">

@@ -1,6 +1,6 @@
-import { updateSessionUserStore } from '$lib/stores/userStore';
+import { serverStoreHandle } from '$lib/stores/serverStoreHandle';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ data }) => {
-	updateSessionUserStore(data?.userAttributes ?? null);
+	serverStoreHandle.userAttributes.set(data?.userAttributes ?? null);
 };

@@ -38,7 +38,7 @@ export default {
 		ctx.status = responseStatus.SUCCESS;
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: { userSession: null } }
+			[responseStatus.SUCCESS]: { stores: { userAttributes: { set: null } }, clientRedirect: '' }
 		});
 	},
 	signUpEmail: async ({ ctx, input }) => {
@@ -123,7 +123,7 @@ export default {
 		}
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: {} },
+			[responseStatus.SUCCESS]: { data: {}, clientRedirect: '/signup/verify' },
 			[responseStatus.CONFLICT]: { message: 'Account already exists.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
 		});
@@ -205,7 +205,10 @@ export default {
 		}
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: { userSession: userAttributes } },
+			[responseStatus.SUCCESS]: {
+				stores: { userAttributes: { set: userAttributes } },
+				clientRedirect: '/refreshLogin'
+			},
 			[responseStatus.PRECONDITION_FAILED]: { message: 'Account not verified.' },
 			[responseStatus.UNAUTHORIZED]: { message: 'Incorrect email or password.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
@@ -230,7 +233,7 @@ export default {
 		}
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: {} },
+			[responseStatus.SUCCESS]: { clientRedirect: '/forgotPassword/verify' },
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
 		});
@@ -248,31 +251,34 @@ export default {
 				ctx.status = responseStatus.SUCCESS;
 			}
 		} catch (e) {
-			// console.log("🚀 ~ verifyCode: ~ e:", e)
+			console.log('🚀 ~ verifyCode: ~ e:', e);
 		}
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: { code: input.code } },
+			[responseStatus.SUCCESS]: {
+				data: { code: input.code },
+				clientRedirect: '/api/callback/email?code=' + input.code.trim()
+			},
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
 		});
 	},
 	resetPasswordEmail: async ({ ctx, input }) => {
 		ctx.status = responseStatus.INTERNAL_SERVER_ERROR;
-		let userSession: Awaited<ReturnType<typeof validateToken>> | null = null;
+		let userAttributes: Awaited<ReturnType<typeof validateToken>> | null = null;
 		let userKey: string | null = null;
 
 		try {
-			userSession = await validateToken(input.code ?? '');
-			userKey = userSession.id;
+			userAttributes = await validateToken(input.code ?? '');
+			userKey = userAttributes.id;
 		} catch (e) {
 			ctx.status = responseStatus.NOT_FOUND;
 		}
 
 		if (userKey) {
 			try {
-				if (userSession) {
-					await auth.invalidateUserSessions(userSession.id);
+				if (userAttributes) {
+					await auth.invalidateUserSessions(userAttributes.id);
 
 					// update key
 					const argon2id = new Argon2id();
@@ -282,21 +288,21 @@ export default {
 							id: nanoid(),
 							authUser: {
 								connect: {
-									id: userSession.id
+									id: userAttributes.id
 								}
 							},
 							hashed_password: hash
 						}
 					});
 
-					const session = await auth.createSession(userSession.id, {});
+					const session = await auth.createSession(userAttributes.id, {});
 
 					ctx.cookies.set(auth.sessionCookieName, session.id, {
 						path: '/',
 						maxAge: 60 * 60
 					});
 					const { user } = await auth.validateSession(session.id);
-					userSession = user;
+					userAttributes = user;
 
 					ctx.status = responseStatus.SUCCESS;
 				} else {
@@ -310,7 +316,7 @@ export default {
 		}
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: { userSession } },
+			[responseStatus.SUCCESS]: { stores: { userAttributes: { set: userAttributes } } },
 			[responseStatus.NOT_FOUND]: { message: 'Ivalid request, please generate new reset link.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
 		});
@@ -343,21 +349,21 @@ export default {
 		}
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: { url: redirectUrl! } },
+			[responseStatus.SUCCESS]: { clientRedirect: redirectUrl?.toString() },
 			[responseStatus.INTERNAL_SERVER_ERROR]: {}
 		});
 	},
 	refreshUser: async ({ ctx, privateCtx }) => {
-		let userSession: User | null = null;
+		let userAttributes: User | null = null;
 
-		userSession = privateCtx.userAttributes;
+		userAttributes = privateCtx.userAttributes;
 		// eslint-disable-next-line prefer-const
 		ctx.status = privateCtx.userAttributes.id
 			? responseStatus.SUCCESS
 			: responseStatus.UNAUTHORIZED;
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { data: { userSession } },
+			[responseStatus.SUCCESS]: { stores: { userAttributes: { set: userAttributes } } },
 			[responseStatus.UNAUTHORIZED]: { message: 'User not logged in.' }
 		});
 	}

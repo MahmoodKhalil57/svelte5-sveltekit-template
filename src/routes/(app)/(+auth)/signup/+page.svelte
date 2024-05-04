@@ -2,40 +2,30 @@
 	import type { ComponentProps } from 'svelte';
 	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
 	import { responseStatus } from '$src/lib/utils/apiUtils/client/serverResponse';
-	import { goto } from '$app/navigation';
 	import ContinueWithGoogle from '$src/lib/components/form/continueWithGoogle.svelte';
 
 	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'signUpEmail'>>;
 	type PreValidation = FormComponent['preValidation'];
-	type OnSuccess = FormComponent['onSuccess'];
 
-	export const preValidation: PreValidation = async (payload) => {
-		if (!payload.password || payload.password === payload.confirmPassword) {
-			return {
-				validationSuccess: true,
-				safePayload: {
-					email: payload.email ?? '',
-					firstName: payload.firstName ?? '',
-					lastName: payload.lastName ?? '',
-					password: payload.password ?? ''
-				},
-				response: undefined
-			};
-		}
-		return {
-			validationSuccess: false,
-			safePayload: undefined,
-			response: {
-				errorMessage: 'Validation Error',
-				status: responseStatus.VALIDATION_ERROR,
-				errorIssues: [{ key: 'password', errorMessages: ['Passwords do not match'] }]
-			}
-		};
-	};
-
-	const onSuccess: OnSuccess = async ({ response }) => {
-		goto('/signup/verify');
-	};
+	export const preValidation: PreValidation = async (payload) =>
+		!payload.password || payload.password === payload.confirmPassword
+			? {
+					validationSuccess: true,
+					safePayload: {
+						email: payload.email ?? '',
+						firstName: payload.firstName ?? '',
+						lastName: payload.lastName ?? '',
+						password: payload.password ?? ''
+					}
+				}
+			: {
+					validationSuccess: false,
+					response: {
+						errorMessage: 'Validation Error',
+						status: responseStatus.VALIDATION_ERROR,
+						errorIssues: [{ key: 'password', errorMessages: ['Passwords do not match'] }]
+					}
+				};
 </script>
 
 <div class="flex flex-col w-full pt-10 pb-20">
@@ -46,7 +36,7 @@
 	</h1>
 
 	<div class="w-full flex flex-col items-center justify-center">
-		<FormBuilder route="authRouter" procedure="signUpEmail" {preValidation} {onSuccess} />
+		<FormBuilder route="authRouter" procedure="signUpEmail" {preValidation} />
 		<div class="w-full flex justify-center text-[13px]">
 			<div>Already have an account?</div>
 			<a href="/login" class="underline font-extrabold">Login.</a>

@@ -2,7 +2,7 @@
 	import Logo from '$lib/components/template/logo.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
 	import { signOut } from '$src/lib/client/luciaClient';
-	import { sessionUserStore } from '$src/lib/stores/userStore';
+	import { userAttributesStore } from '$src/lib/stores/userStore';
 </script>
 
 <div class="header">
@@ -13,7 +13,7 @@
 				<Navigation />
 				<li>
 					<div class="!bg-inherit p-0">
-						{#if $sessionUserStore?.id}
+						{#if $userAttributesStore?.id}
 							<div
 								on:keydown={() => signOut()}
 								on:click={() => signOut()}

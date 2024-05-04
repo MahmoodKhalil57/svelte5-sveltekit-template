@@ -1,8 +1,8 @@
 import type { PageLoad } from './$types';
-import { updateSessionUserStore } from '$lib/stores/userStore';
 import { redirect } from '@sveltejs/kit';
+import { serverStoreHandle } from '$lib/stores/serverStoreHandle';
 
 export const load: PageLoad = async ({ data }) => {
-	updateSessionUserStore(data.user ?? null);
+	serverStoreHandle.userAttributes.set(data.user ?? null);
 	redirect(307, '/?');
 };

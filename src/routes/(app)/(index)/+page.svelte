@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { signOut } from '$lib/client/luciaClient';
-	import ContinueWithGoogle from '$lib/components/form/continueWithGoogle.svelte';
-	import { sessionUserStore } from '$lib/stores/userStore';
 	import { apiSend, responseStatus } from '$src/lib/client/apiClient';
 	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
 	import { serverTimeStore } from '$src/lib/stores/testStore';

@@ -1,15 +1,6 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import ContinueWithGoogle from '$src/lib/components/form/continueWithGoogle.svelte';
 	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
-	import type { ComponentProps } from 'svelte';
-
-	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'verifyCode'>>;
-	type OnSuccess = FormComponent['onSuccess'];
-
-	const onSuccess: OnSuccess = async ({ response }) => {
-		goto('/refreshLogin');
-	};
 </script>
 
 <div class="flex flex-col w-full pt-10 pb-20">
@@ -19,7 +10,7 @@
 		Login
 	</h1>
 	<div class="w-full flex flex-col justify-center items-center">
-		<FormBuilder route="authRouter" procedure="signInEmail" {onSuccess} />
+		<FormBuilder route="authRouter" procedure="signInEmail" />
 		<div class="w-full flex justify-center text-[13px]">
 			<div>Dont have an account?</div>
 			<a href="/signup" class="underline font-extrabold">Create an account.</a>
