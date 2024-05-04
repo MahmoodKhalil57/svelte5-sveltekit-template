@@ -21,6 +21,7 @@ import type {
 import { publicApiStructure } from '../client/clientApiStructure';
 import { responseStatus } from '../client/serverResponse';
 import zu from 'zod_utilz';
+import { goto } from '$app/navigation';
 
 export const InputTypeEnum = {
 	TEXT: 'TEXT',
@@ -311,9 +312,21 @@ export const makeApiRequest = async <
 		}
 	}
 
-	if (serverStoreHandle && response.status === responseStatus.SUCCESS && response?.body?.stores) {
-		// @ts-ignore - this is fine
-		handleStoreResponse(serverStoreHandle, response.body.stores);
+	if (serverStoreHandle && response.status === responseStatus.SUCCESS) {
+		if (response?.body?.stores) {
+			// @ts-ignore - this is fine
+			handleStoreResponse(serverStoreHandle, response.body.stores);
+		}
+
+		if (response?.body?.clientRedirect) {
+			if (response.body.clientRedirect.startsWith('https')) {
+				window.location.href = response.body.clientRedirect;
+			} else {
+				goto(response.body.clientRedirect);
+			}
+		} else if (response?.body?.clientRedirect === '') {
+			window.location.reload();
+		}
 	}
 
 	return response as V extends false
