@@ -193,32 +193,14 @@ export const makeApiRequest = async <
 		status: responseStatus.VALIDATION_ERROR as const,
 		errorIssues: []
 	};
-	let validationSuccess = null;
+	let validationSuccess = false;
 	// @ts-expect-error this is fine.
 	const endpointType = getEndpointTypeWithRouteProcedure(route, procedure);
 	if (validate) {
-		if (extraValidation && payload) {
-			const extraValidationResponse = await extraValidation(payload);
-			validationSuccess = validationSuccess && extraValidationResponse.validationSuccess;
-			if (validationSuccess) {
-				// @ts-expect-error this is fine.
-				payload = extraValidationResponse.safePayload;
-			} else if (extraValidationResponse.response) {
-				response = {
-					errorMessage: extraValidationResponse?.response?.errorMessage || response.errorMessage,
-					errorIssues: [
-						...response.errorIssues,
-						...(extraValidationResponse?.response?.errorIssues ?? [])
-					],
-					status: responseStatus.VALIDATION_ERROR
-				};
-			}
-		}
-
 		// @ts-expect-error this is fine.
 		let zodValidation = getZodValidationWithRouteProcedure(route, procedure) as z.AnyZodObject;
 
-		if (zodValidation && validationSuccess !== false) {
+		if (zodValidation) {
 			if (endpointType === 'form' && payload instanceof FormData) {
 				// @ts-expect-error this is fine.
 				zodValidation = zu.useFormData(zodValidation) as z.AnyZodObject;
@@ -230,6 +212,21 @@ export const makeApiRequest = async <
 				response = viladiationResponse;
 			}
 			safePayload = validateZodResponse?.safePayload;
+
+			if (extraValidation && safePayload) {
+				const extraValidationResponse = await extraValidation(safePayload);
+				validationSuccess = validationSuccess && extraValidationResponse.validationSuccess;
+				if (validationSuccess) {
+					// @ts-expect-error this is fine.
+					safePayload = extraValidationResponse.safePayload;
+				} else if (extraValidationResponse.response) {
+					response = {
+						errorMessage: extraValidationResponse.response.errorMessage || response.errorMessage,
+						errorIssues: [...response.errorIssues, ...extraValidationResponse.response.errorIssues],
+						status: responseStatus.VALIDATION_ERROR
+					};
+				}
+			}
 
 			if (validationSuccess && endpointType === 'form' && payload instanceof Object) {
 				const formData = new FormData();
