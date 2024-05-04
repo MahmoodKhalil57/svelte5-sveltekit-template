@@ -2,5 +2,17 @@
 	{
 		"iconeName": "logos:google-icon",
 		"iconeColored": true
+	},
+	{
+		"iconeName": "mdi:github",
+		"iconeColored": false
+	},
+	{
+		"iconeName": "material-symbols:list-rounded",
+		"iconeColored": false
+	},
+	{
+		"iconeName": "mdi:close-circle",
+		"iconeColored": false
 	}
 ]

@@ -5,7 +5,7 @@
 	import { userAttributesStore } from '$src/lib/stores/userStore';
 </script>
 
-<header class="header min-h-header w-full">
+<header class="z-20 relative header min-h-header w-full">
 	<div class="relative flex justify-center sm:justify-between navbar bg-base-100">
 		<a href="/"><Logo /></a>
 		<div class="flex-none hidden sm:block">
@@ -32,7 +32,7 @@
 		</div>
 		<div class="absolute flex w-full pointer-events-none sm:hidden">
 			<label
-				for="layout-drawer"
+				for="main-menu-drawer"
 				class="mx-6 text-3xl cursor-pointer pointer-events-auto hover:scale-105 drawer-button i-material-symbols-list-rounded"
 			/>
 		</div>
