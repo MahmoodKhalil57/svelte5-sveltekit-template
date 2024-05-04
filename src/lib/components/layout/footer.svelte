@@ -24,7 +24,7 @@
 </script>
 
 <footer
-	class="flex flex-col justify-between w-full h-full gap-8 px-10 py-4 border-t sm:gap-0 sm:flex-row bg-base-200 text-base-content border-base-300"
+	class="flex flex-col justify-between w-full h-full gap-8 px-10 py-4 border-t sm:gap-0 sm:flex-row bg-base-200 text-base-content border-base-300 min-h-footer"
 >
 	<div class="flex flex-col items-center sm:flex-row">
 		<a href="/">
