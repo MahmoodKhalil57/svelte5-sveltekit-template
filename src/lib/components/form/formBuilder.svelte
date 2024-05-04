@@ -19,7 +19,6 @@
 		type ApiClientError,
 		validateZod
 	} from '$apiUtils/client/apiClientUtils';
-	import ButtonDefault from '$lib/components/ui/buttonDefault.svelte';
 	import FormElement from '$lib/components/form/formElement.svelte';
 	import type { PublicRoutes, PublicProcedures } from '$apiUtils/server/ApiUtils.type.server';
 	import type { SuccessFullApiSend } from '$lib/client/apiClient';
@@ -228,21 +227,12 @@
 		{#each formStructure as row}
 			<div class="flex flex-row gap-2">
 				{#each row as field}
-					<div class="flex flex-col w-full">
-						<FormElement {field} bind:value={formData[field.id]} />
+					<div class="flex flex-col w-full justify-center items-center">
+						<FormElement {field} bind:value={formData[field.id]} {disabledButton} />
 						<FormErrorMessage fieldName={field.id} {inlineErrors} />
 					</div>
 				{/each}
 			</div>
 		{/each}
-	</div>
-	<div class="flex flex-col items-center justify-center gap-10 w-3/4 max-w-[300px] mt-2 md:mt-5">
-		<ButtonDefault
-			value="Reset Password"
-			Class="btn-secondary btn w-full self-center capitalize sm:text-[100%]"
-			dynamicDisabled={disabledButton}
-		>
-			Submit
-		</ButtonDefault>
 	</div>
 </form>

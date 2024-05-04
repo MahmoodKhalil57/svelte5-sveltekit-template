@@ -4,8 +4,9 @@
 	export let label: string = '';
 	export let type: keyof typeof InputTypeEnum;
 	export let placeHolder: string = '';
-	export let id: string = '';
+	export let id: string | undefined = undefined;
 	export let value: string = '';
+	export let Class: string = '';
 </script>
 
 <label class="w-full">
@@ -15,7 +16,7 @@
 	{#if type === InputTypeEnum.TEXT}
 		<input
 			placeholder={placeHolder}
-			class="w-full !outline-none input input-bordered"
+			class="w-full !outline-none input input-bordered {Class}"
 			type="text"
 			{id}
 			name={id}
@@ -27,7 +28,7 @@
 			type="email"
 			name={id}
 			placeholder={placeHolder}
-			class="w-full !outline-none input input-bordered"
+			class="w-full !outline-none input input-bordered {Class}"
 			bind:value
 		/>
 	{:else if type === InputTypeEnum.PASSWORD}
@@ -36,7 +37,7 @@
 			type="password"
 			name={id}
 			placeholder={placeHolder}
-			class="w-full !outline-none input input-bordered"
+			class="w-full !outline-none input input-bordered {Class}"
 			bind:value
 		/>
 	{/if}

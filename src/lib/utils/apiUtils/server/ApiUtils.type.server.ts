@@ -3,6 +3,9 @@ import type { z, AnyZodObject } from 'zod';
 import type { responseStatus } from '../client/serverResponse';
 import type { InputTypeEnum, ApiClientError, ServerStoreHandle } from '../client/apiClientUtils';
 import type { endpoints } from './apiUtils.server';
+import type { apiStructure } from '$api/helpers/apiStructure.server';
+import type { getContext } from '$api/helpers/context.server';
+import type { middlewareMap } from '$api/helpers/middleware.server';
 
 export type EndpointType = keyof typeof endpoints;
 export type Field = {
@@ -12,6 +15,8 @@ export type Field = {
 	placeHolder?: string;
 	href?: string;
 	text?: string;
+	Class?: string;
+	ContainerClass?: string;
 };
 export type FormStructure = readonly (readonly Field[])[];
 
