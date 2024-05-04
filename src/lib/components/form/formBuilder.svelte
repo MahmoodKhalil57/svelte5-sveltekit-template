@@ -23,6 +23,9 @@
 	import type { SuccessFullApiSend } from '$lib/client/apiClient';
 
 	import { makeApiRequest } from '$apiUtils/client/apiClientUtils';
+	import { beforeNavigate } from '$app/navigation';
+
+	let unsavedWork: boolean | null = null;
 
 	let flashData:
 		| {
@@ -33,6 +36,7 @@
 		| null;
 	export let inlineErrors: ErrorIssue[] = [];
 	export let disabledButton = false;
+	export let areYouSure = false;
 
 	type R = $$Generic<PublicRoutes>;
 	type P = $$Generic<PublicProcedures<R>>;
@@ -179,12 +183,31 @@
 		inlineErrors = [];
 		data.resetSubmitEvent();
 	};
+
+	beforeNavigate(({ cancel }) => {
+		if (unsavedWork && areYouSure) {
+			if (
+				!confirm(
+					'Are you sure you want to leave this page? You have unsaved changes that will be lost.'
+				)
+			) {
+				cancel();
+			}
+		}
+	});
+
+	const formChange = () => {
+		if (unsavedWork === false) {
+			unsavedWork = true;
+		}
+	};
 </script>
 
 <form
 	id="{route}/{String(procedure)}"
 	class="flex flex-col w-full max-w-xl gap-3 px-10 justify-center items-center"
 	novalidate
+	on:input={formChange}
 	on:submit|preventDefault={(event) => onSubmit(event, handleFlashMessage)}
 >
 	<div>
