@@ -24,11 +24,19 @@ import zu from 'zod_utilz';
 import { goto } from '$app/navigation';
 
 export const InputTypeEnum = {
+	// inputs
 	TEXT: 'TEXT',
 	EMAIL: 'EMAIL',
 	TEXTAREA: 'TEXTAREA',
 	PASSWORD: 'PASSWORD',
-	LINK: 'LINK'
+	// labels
+	LINK: 'LINK',
+	TITLE: 'TITLE',
+	//buttons
+	SUBMIT: 'SUBMIT',
+	GOOGLESIGNIN: 'GOOGLESIGNIN',
+	//deccorations
+	DIVIDER: 'DIVIDER'
 };
 
 const makeGetRequest = async <PT extends string, PL>(pt: PT, pl: PL, f: typeof fetch) => {
