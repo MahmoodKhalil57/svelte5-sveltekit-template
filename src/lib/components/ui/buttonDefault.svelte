@@ -5,16 +5,18 @@
 	export let dynamicDisabled = false;
 	export let onClick = () => {};
 	export let url = '';
+	export let id: string | undefined = undefined;
 </script>
 
 {#if url}
 	<a href={url}>
 		{#if form === ''}
-			<button class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
+			<button {id} class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
 				<slot />
 			</button>
 		{:else}
 			<button
+				{id}
 				on:submit|preventDefault
 				type="submit"
 				class="btn {Class}"
@@ -28,11 +30,12 @@
 		{/if}
 	</a>
 {:else if form === ''}
-	<button class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
+	<button {id} class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
 		<slot />
 	</button>
 {:else}
 	<button
+		{id}
 		on:submit|preventDefault
 		type="submit"
 		class="btn {Class}"
