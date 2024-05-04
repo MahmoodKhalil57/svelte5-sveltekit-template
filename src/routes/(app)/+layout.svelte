@@ -8,7 +8,7 @@
 	<div class="w-full min-h-header">
 		<Header />
 	</div>
-	<div class="flex-center stretch min-h-page">
+	<div class="flex justify-center stretch min-h-page">
 		<slot />
 	</div>
 	<div class="w-full min-h-footer">
