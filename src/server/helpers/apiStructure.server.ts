@@ -31,7 +31,15 @@ export const apiStructure = {
 			middlewares: ['devProcedure'],
 			public: true,
 			validation: z.object({ name: z.string().min(1) }) satisfies z.AnyZodObject,
-			formStructure: [[{ id: 'name', type: 'TEXT', placeHolder: 'Name', label: 'Name' }]] as const
+			formStructure: [
+				[{ id: 'name', type: 'TEXT', placeHolder: 'Name', label: 'Name' }],
+				[
+					{
+						id: 'submitTestPost',
+						type: 'SUBMIT'
+					}
+				]
+			] as const
 		},
 		testGet: {
 			requestType: 'GET',
@@ -40,10 +48,75 @@ export const apiStructure = {
 		}
 	},
 	authRouter: {
-		signOut: {
+		signOnGoogle: {
 			requestType: 'POST',
-			middlewares: ['privateProcedure'],
-			validation: z.object({}) satisfies z.AnyZodObject
+			middlewares: ['hybridUserProcedure'],
+			validation: z.object({})
+		},
+		signInEmail: {
+			requestType: 'POST',
+			middlewares: ['hybridUserProcedure'],
+			public: true,
+			validation: z.object({
+				email: emailValidation,
+				password: shortPasswordValidation
+			}) satisfies z.AnyZodObject,
+			formStructure: [
+				[
+					{
+						id: '',
+						type: 'TITLE',
+						text: 'Login'
+					}
+				],
+				[{ id: 'email', type: 'EMAIL', placeHolder: 'Email address', label: 'Email' }],
+				[
+					{
+						id: 'password',
+						type: 'PASSWORD',
+						placeHolder: 'password',
+						label: 'Password'
+					}
+				],
+				[
+					{
+						id: 'forgotPassword',
+						type: 'LINK',
+						text: 'Forgot password?',
+						href: '/forgotPassword',
+						Class: 'place-self-end'
+					}
+				],
+				[
+					{
+						id: 'submitSignInEmail',
+						type: 'SUBMIT'
+					}
+				],
+				[
+					{
+						id: 'forgotPassword',
+						type: 'LINK',
+						label: 'Dont have an account?',
+						text: 'Create one now!',
+						href: '/signup',
+						ContainerClass: 'gap-2 !flex-row'
+					}
+				],
+				[
+					{
+						id: '',
+						type: 'DIVIDER',
+						text: 'OR'
+					}
+				],
+				[
+					{
+						id: 'googleSignInSignInEmail',
+						type: 'GOOGLESIGNIN'
+					}
+				]
+			] as const
 		},
 		signUpEmail: {
 			requestType: 'POST',
@@ -64,6 +137,13 @@ export const apiStructure = {
 				password: fullPasswordValidation
 			}) satisfies z.AnyZodObject,
 			formStructure: [
+				[
+					{
+						id: '',
+						text: '1. Sign up',
+						type: 'TITLE'
+					}
+				],
 				[
 					{
 						id: 'firstName',
@@ -94,42 +174,39 @@ export const apiStructure = {
 						placeHolder: 'password',
 						label: 'Confirm Password'
 					}
+				],
+				[
+					{
+						id: 'submitSignUpEmail',
+						type: 'SUBMIT'
+					}
+				],
+				[
+					{
+						id: 'loginLink',
+						type: 'LINK',
+						label: 'Already have an account?',
+						text: 'Login!',
+						href: '/login',
+						ContainerClass: 'gap-2 !flex-row'
+					}
+				],
+				[
+					{
+						id: '',
+						type: 'DIVIDER',
+						text: 'OR'
+					}
+				],
+				[
+					{
+						id: 'googleSignInSignupEmail',
+						type: 'GOOGLESIGNIN'
+					}
 				]
 			] as const
 		},
-		signInEmail: {
-			requestType: 'POST',
-			middlewares: ['hybridUserProcedure'],
-			public: true,
-			validation: z.object({
-				email: emailValidation,
-				password: shortPasswordValidation
-			}) satisfies z.AnyZodObject,
-			formStructure: [
-				[{ id: 'email', type: 'EMAIL', placeHolder: 'Email address', label: 'Email' }],
-				[
-					{
-						id: 'password',
-						type: 'PASSWORD',
-						placeHolder: 'password',
-						label: 'Password'
-					}
-				],
-				[{ id: 'forgotPassword', type: 'LINK', text: 'Forgot password?', href: '/forgotPassword' }]
-			] as const
-		},
-		sendResetPasswordEmail: {
-			requestType: 'POST',
-			middlewares: ['hybridUserProcedure'],
-			public: true,
-			validation: z.object({
-				email: emailValidation
-			}) satisfies z.AnyZodObject,
-			formStructure: [
-				[{ id: 'email', type: 'EMAIL', placeHolder: 'Email address', label: 'Email' }]
-			] as const
-		},
-		verifyCode: {
+		verifyEmailSignup: {
 			requestType: 'POST',
 			middlewares: ['hybridUserProcedure'],
 			public: true,
@@ -139,10 +216,83 @@ export const apiStructure = {
 			formStructure: [
 				[
 					{
+						id: '',
+						type: 'TITLE',
+						text: '2. Verify Account'
+					}
+				],
+				[
+					{
 						id: 'code',
 						type: 'EMAIL',
 						placeHolder: 'Verification code',
 						label: 'Check your email for code.'
+					}
+				],
+				[
+					{
+						id: 'submitSendResetPasswordEmail',
+						type: 'SUBMIT'
+					}
+				]
+			] as const
+		},
+		signOut: {
+			requestType: 'POST',
+			middlewares: ['privateProcedure'],
+			validation: z.object({}) satisfies z.AnyZodObject
+		},
+		sendResetPasswordEmail: {
+			requestType: 'POST',
+			middlewares: ['hybridUserProcedure'],
+			public: true,
+			validation: z.object({
+				email: emailValidation
+			}) satisfies z.AnyZodObject,
+			formStructure: [
+				[
+					{
+						id: '',
+						type: 'TITLE',
+						text: '1. Reset Password'
+					}
+				],
+				[{ id: 'email', type: 'EMAIL', placeHolder: 'Email address', label: 'Email' }],
+				[
+					{
+						id: 'submitSendResetPasswordEmail',
+						type: 'SUBMIT'
+					}
+				]
+			] as const
+		},
+		verifyEmailResetPassword: {
+			requestType: 'POST',
+			middlewares: ['hybridUserProcedure'],
+			public: true,
+			validation: z.object({
+				code: z.string().length(21, 'Invalid code length.')
+			}),
+			formStructure: [
+				[
+					{
+						id: '',
+						type: 'TITLE',
+						text: '2. Verify code'
+					}
+				],
+				[
+					{
+						id: 'code',
+						type: 'EMAIL',
+						placeHolder: 'Verification code',
+						label: 'Check your email for code.'
+					}
+				],
+				[
+					{
+						id: 'submitSendResetPasswordEmail',
+						type: 'SUBMIT'
 					}
 				]
 			] as const
@@ -157,30 +307,43 @@ export const apiStructure = {
 			formStructure: [
 				[
 					{
+						id: '',
+						type: 'TITLE',
+						text: '3. Reset Password'
+					}
+				],
+				[
+					{
 						id: 'code',
 						type: 'TEXT',
 						placeHolder: 'Verification code',
-						label: 'Check your email for code.'
-					},
+						label: 'Check your email for code.',
+						Class: 'hidden'
+					}
+				],
+				[
 					{
 						id: 'password',
 						type: 'PASSWORD',
 						placeHolder: 'password',
 						label: 'New password'
-					},
+					}
+				],
+				[
 					{
 						id: 'confirmPassword',
 						type: 'PASSWORD',
 						placeHolder: 'password',
 						label: 'Confirm password'
 					}
+				],
+				[
+					{
+						id: 'submitResetPasswordEmail',
+						type: 'SUBMIT'
+					}
 				]
 			] as const
-		},
-		signOnGoogle: {
-			requestType: 'POST',
-			middlewares: ['hybridUserProcedure'],
-			validation: z.object({})
 		},
 		refreshUser: {
 			requestType: 'POST',
