@@ -47,6 +47,7 @@
 		"nanoid": "^5.0.4",
 		"nodemailer": "^6.9.8",
 		"oslo": "^1.2.0",
+		"highlight.js": "^11.9.0",
 		"postcss": "^8.4.31",
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.3",

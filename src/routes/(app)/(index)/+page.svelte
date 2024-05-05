@@ -23,4 +23,6 @@
 	<div>
 		Server time: {$serverTimeStore}
 	</div>
+
+	<a href="/showcase?route=testRouter&procedure=testPost&templatePage=(app)/(index)">See code</a>
 </section>
