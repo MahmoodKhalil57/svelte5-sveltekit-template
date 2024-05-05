@@ -2,6 +2,7 @@
 	import hljs from 'highlight.js';
 	import 'highlight.js/styles/atom-one-dark.min.css';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	let route = '';
 	let procedure = '';
@@ -169,9 +170,11 @@
 		}
 	};
 
-	const formatElement = (node: HTMLElement) => {
-		hljs.highlightElement(node as HTMLElement);
-	};
+	onMount(() => {
+		hljs.configure({
+			languages: ['typescript', 'javascript', 'html']
+		});
+	});
 </script>
 
 <section class="w-full flex flex-col justify-center items-center gap-3">
@@ -185,7 +188,9 @@
 			<h1>Structure Code</h1>
 			<div class="mockup-code flex flex-col max-w-5xl">
 				{#each linesObject.structure as line, i}
-					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
+					<pre data-prefix={i + 1} class="flex flex-row">
+						<code use:hljs.highlightElement>{line}</code>
+					</pre>
 				{/each}
 				{#if linesObject.structureLink}
 					<!-- svelte-ignore a11y-missing-content -->
@@ -197,7 +202,9 @@
 			<h1>Procedure Code</h1>
 			<div class="mockup-code flex flex-col max-w-5xl">
 				{#each linesObject.router as line, i}
-					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
+					<pre data-prefix={i + 1} class="flex flex-row">
+						<code use:hljs.highlightElement>{line}</code>
+					</pre>
 				{/each}
 				{#if linesObject.routerLink}
 					<!-- svelte-ignore a11y-missing-content -->
@@ -209,7 +216,9 @@
 			<h1>Template code</h1>
 			<div class="mockup-code flex flex-col max-w-5xl">
 				{#each linesObject.templatePage as line, i}
-					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
+					<pre data-prefix={i + 1} class="flex flex-row">
+						<code use:hljs.highlightElement>{line}</code>
+					</pre>
 				{/each}
 				{#if linesObject.templatePageLink}
 					<!-- svelte-ignore a11y-missing-content -->
