@@ -20,18 +20,42 @@ export const logData = {
 			payloads: []
 		};
 	},
-	info: ({ codeLocation, message, request, requestStatus, response }) => {
-		accLoggerData.request = request;
-		accLoggerData.response = response;
-		accLoggerData.responseStatus = requestStatus;
+	info: ({ codeLocation, message, request, requestStatus, response, identifier }) => {
+		if (request) {
+			accLoggerData.request = request;
+		}
+
+		if (response) {
+			accLoggerData.response = response;
+		}
+
+		if (requestStatus) {
+			accLoggerData.responseStatus = requestStatus;
+		}
+
+		if (identifier) {
+			accLoggerData.identifier = identifier;
+		}
 		if (message) {
 			accLoggerData.payloads.push({ location: codeLocation, message, type: 'info' });
 		}
 	},
-	error: ({ codeLocation, message, request, requestStatus, response }) => {
-		accLoggerData.request = request;
-		accLoggerData.response = response;
-		accLoggerData.responseStatus = requestStatus;
+	error: ({ codeLocation, message, request, requestStatus, response, identifier }) => {
+		if (request) {
+			accLoggerData.request = request;
+		}
+
+		if (response) {
+			accLoggerData.response = response;
+		}
+
+		if (requestStatus) {
+			accLoggerData.responseStatus = requestStatus;
+		}
+
+		if (identifier) {
+			accLoggerData.identifier = identifier;
+		}
 		if (message) {
 			accLoggerData.payloads.push({ location: codeLocation, message, type: 'error' });
 		}

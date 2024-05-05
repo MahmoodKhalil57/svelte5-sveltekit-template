@@ -10,6 +10,7 @@ import { prisma } from '$api/clients/prisma.server';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 
 const urlAlphabetGenerator = customAlphabet(urlAlphabet, 21);
+import { logData } from '$api/helpers/logger.server';
 
 export const middlewareMap = {
 	hybridUserProcedure: async function (ctx) {
@@ -134,6 +135,11 @@ export const middlewareMap = {
 		if (!dev) {
 			throwError(responseStatus.FORBIDDEN);
 		}
+
+		logData.info({
+			codeLocation: '🚀 ~ hybridUser:',
+			identifier: 'developer'
+		});
 		return { ctx };
 	}
 } satisfies MiddlewareMap<Awaited<ReturnType<typeof getContext>>>;
