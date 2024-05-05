@@ -182,6 +182,7 @@
 	>
 	<div class="w-full flex flex-col justify-center items-center gap-3">
 		{#if linesObject.structure.length}
+			<h1>Structure Code</h1>
 			<div class="mockup-code flex flex-col max-w-5xl">
 				{#each linesObject.structure as line, i}
 					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
@@ -193,6 +194,7 @@
 			</div>
 		{/if}
 		{#if linesObject.router.length}
+			<h1>Procedure Code</h1>
 			<div class="mockup-code flex-row max-w-5xl">
 				{#each linesObject.router as line, i}
 					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
@@ -204,6 +206,7 @@
 			</div>
 		{/if}
 		{#if linesObject.templatePage.length}
+			<h1>Template code</h1>
 			<div class="mockup-code flex-row max-w-5xl">
 				{#each linesObject.templatePage as line, i}
 					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
