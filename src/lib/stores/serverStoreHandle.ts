@@ -3,8 +3,6 @@ import { serverTimeStore } from './testStore';
 
 export const serverStoreHandle = {
 	serverTime: {
-		set: async (value: number) => {
-			serverTimeStore.set(value);
-		}
+		set: serverTimeStore.set
 	}
 } satisfies ServerStoreHandle;
