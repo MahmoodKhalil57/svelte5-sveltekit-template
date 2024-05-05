@@ -34,3 +34,9 @@
 	{preValidation}
 	Class="!pt-10 !pb-20"
 />
+
+<a
+	href="/showcase?route=authRouter&procedure=resetPasswordEmail&templatePage=(app)/(%2Bauth)/forgotPassword/reset"
+>
+	See code
+</a>
