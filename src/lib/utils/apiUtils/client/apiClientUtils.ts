@@ -354,7 +354,7 @@ export const makeApiRequest = async <
 
 export type ServerStoreHandle = {
 	[key: string]: {
-		[key: string]: (value: any) => Promise<void>;
+		[key: string]: (value: any) => Promise<void> | void;
 	};
 };
 
