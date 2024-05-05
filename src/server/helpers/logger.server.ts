@@ -2,7 +2,7 @@ import type { LogData } from '$apiUtils/server/ApiUtils.type.server';
 import type { responseStatus } from '$api/root.server';
 import { dev } from '$app/environment';
 
-const LOGDATA = dev;
+const LOGDATA = !dev;
 
 let accLoggerData: {
 	request?: Request;
