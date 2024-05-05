@@ -1,20 +1,13 @@
 // +page.server.ts
-import { prisma } from '$api/clients/prisma.server';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { validatAuthUserToken } from '$api/controllers/authController.server';
 
-export const load: PageServerLoad = async ({ url, parent }) => {
-	await parent();
-
-	// If code doesnt exist redirect user to refreshLogin
+export const load: PageServerLoad = async ({ url }) => {
 	const codeParam = url.searchParams.get('code');
 	let codeId: string | undefined;
 	if (codeParam) {
-		const codeRow = await prisma.authToken.findUnique({
-			where: {
-				id: codeParam
-			}
-		});
+		const codeRow = await validatAuthUserToken(codeParam);
 		codeId = codeRow?.id;
 	}
 	if (!codeId) {

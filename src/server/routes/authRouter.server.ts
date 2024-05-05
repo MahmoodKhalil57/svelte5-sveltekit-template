@@ -75,8 +75,7 @@ export default {
 
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: userAttributes } },
-				clientRedirect: ''
+				stores: { userAttributes: { set: userAttributes } }
 			},
 			[responseStatus.PRECONDITION_FAILED]: { message: 'Account not verified.' },
 			[responseStatus.UNAUTHORIZED]: { message: 'Incorrect email or password.' },
@@ -256,8 +255,7 @@ export default {
 
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: userAttributes } },
-				clientRedirect: ''
+				stores: { userAttributes: { set: userAttributes } }
 			},
 			[responseStatus.NOT_FOUND]: { message: 'Ivalid request, please generate new reset link.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
