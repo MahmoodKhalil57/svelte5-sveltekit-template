@@ -61,6 +61,9 @@ devDependencies:
   eslint-plugin-svelte:
     specifier: ^2.38.0
     version: 2.38.0(eslint@9.2.0)(svelte@4.2.15)
+  highlight.js:
+    specifier: ^11.9.0
+    version: 11.9.0
   postcss:
     specifier: ^8.4.31
     version: 8.4.38
@@ -1903,6 +1906,11 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       function-bind: 1.1.2
+    dev: true
+
+  /highlight.js@11.9.0:
+    resolution: {integrity: sha512-fJ7cW7fQGCYAkgv4CPfwFHrfd/cLS4Hau96JuJ+ZTOWhjnhoeN1ub1tFmALm/+lW5z4WCAuAV9bm05AP0mS6Gw==}
+    engines: {node: '>=12.0.0'}
     dev: true
 
   /https-proxy-agent@5.0.1:
