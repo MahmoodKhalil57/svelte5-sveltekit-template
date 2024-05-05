@@ -8,9 +8,9 @@ import { auth } from '$api/clients/luciaClient.server';
 import type { User } from 'lucia';
 import { prisma } from '$api/clients/prisma.server';
 import { customAlphabet, urlAlphabet } from 'nanoid';
+import { logData } from './logger.server';
 
 const urlAlphabetGenerator = customAlphabet(urlAlphabet, 21);
-import { logData } from '$api/helpers/logger.server';
 
 export const middlewareMap = {
 	hybridUserProcedure: async function (ctx) {
@@ -91,6 +91,11 @@ export const middlewareMap = {
 			hybridUser = unloggedUserRowIndepth?.hybridUser!;
 		}
 
+		logData.info({
+			codeLocation: '🚀 ~ hybridUser:',
+			identifier: hybridUser?.id
+		});
+
 		// checks if hybridUserId exists just in case user tried to inject it
 		return { hybridCtx: { hybridUser }, privateCtx: { userAttributes }, ctx };
 	},
@@ -108,6 +113,11 @@ export const middlewareMap = {
 					loggedUserId: userAttributes?.id
 				}
 			}))!;
+
+			logData.info({
+				codeLocation: '🚀 ~ hybridUser:',
+				identifier: hybridUser?.id
+			});
 			return { privateCtx: { userAttributes: userAttributes }, hybridCtx: { hybridUser }, ctx };
 		}
 
