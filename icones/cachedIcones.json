@@ -14,5 +14,9 @@
 	{
 		"iconeName": "mdi:close-circle",
 		"iconeColored": false
+	},
+	{
+		"iconeName": "carbon:promote",
+		"iconeColored": false
 	}
 ]
