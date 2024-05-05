@@ -1,5 +1,8 @@
 import type { LogData } from '$apiUtils/server/ApiUtils.type.server';
 import type { responseStatus } from '$api/root.server';
+import { dev } from '$app/environment';
+
+const LOGDATA = dev;
 
 let accLoggerData: {
 	request?: Request;
@@ -61,6 +64,7 @@ export const logData = {
 		}
 	},
 	flush: async () => {
+		if (!LOGDATA) return;
 		if (accLoggerData.payloads.length === 0) {
 			console.log({
 				request: accLoggerData.request,
