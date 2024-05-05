@@ -9,10 +9,3 @@ import { logData } from '$api/helpers/logger.server';
 export const handle = sequence(
 	svelteApiHandle(apiStructure, getContext, middlewareMap, API, '0.1.4', logData)
 );
-
-// const luciaHandle: Handle = async ({ event, resolve }) => {
-// 	event.locals.auth = auth.handleRequest(event);
-// 	return await resolve(event);
-// };
-
-// export const handle = sequence(luciaHandle, apiHook);

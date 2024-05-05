@@ -57,7 +57,9 @@
 				payload: ReturnType<
 					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
 				>
-		  ) => ReturnType<typeof validateZod<z.AnyZodObject, APIInputType<R, P>>>)
+		  ) => Promise<
+				Partial<Awaited<ReturnType<typeof validateZod<z.AnyZodObject, APIInputType<R, P>>>>>
+		  >)
 		| undefined = undefined;
 
 	export let extraValidation:
@@ -76,6 +78,7 @@
 			if (preValidation && formData) {
 				// @ts-expect-error this is fine.
 				const preValidationResponse = await preValidation(formData);
+				// @ts-expect-error this is fine.
 				validationSuccess = validationSuccess && preValidationResponse.validationSuccess;
 				if (validationSuccess) {
 					// @ts-expect-error this is fine.
