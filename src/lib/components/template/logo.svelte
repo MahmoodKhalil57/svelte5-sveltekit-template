@@ -1,1 +1,3 @@
-<div class="text-5xl sm:text-4xl normal-case btn btn-ghost !bg-inherit">MK</div>
+<div class="border-2 border-white text-white rounded-full p-3">
+	<div class="text-3xl i-carbon-promote"></div>
+</div>

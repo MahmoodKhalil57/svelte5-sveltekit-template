@@ -1,5 +1,5 @@
 {
-	"name": "sveltepholio",
+	"name": "svelte_template",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -14,6 +14,7 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
 		"script:migrateApiStructure": "node ./scripts/migrate-api-structure.server.js ./src/server/helpers/apiStructure.server.ts ./src/lib/utils/apiUtils/client/clientApiStructure.ts",
+		"pwa:generate": "pwa-assets-generator --preset minimal-2023 static/logo-removebg-preview.png",
 		"icones:generate": "cd node_modules/tailwind-icones-plugin && pnpm generate:icones \"%cd%\"",
 		"linux:icones:generate": "current_dir=$(pwd) && cd node_modules/tailwind-icones-plugin && pnpm generate:icones \"$current_dir\""
 	},
@@ -24,6 +25,7 @@
 		"@sveltejs/kit": "^2.5.7",
 		"@sveltejs/vite-plugin-svelte": "^3.1.0",
 		"@typescript-eslint/parser": "^7.8.0",
+		"@vite-pwa/assets-generator": "^0.2.4",
 		"autoprefixer": "^10.4.16",
 		"daisyui": "^4.10.5",
 		"dotenv": "^16.4.5",
