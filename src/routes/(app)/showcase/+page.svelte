@@ -149,12 +149,12 @@
 	};
 
 	const getTemplatePage = async (path: string) => {
-		const encodedPath = encodeURIComponent(path);
 		const res = (await fetch(
-			`https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/routes/${encodedPath}/%2Bpage.svelte
+			`https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/routes/${path}/%2Bpage.svelte
 			`
 		)) as Response;
 		const routerCode = await res.text();
+		console.log('🚀 ~ getTemplatePage ~ routerCode:', routerCode);
 		const procedureLinesString = routerCode.split('\n');
 		if (procedureLinesString) {
 			linesObject.templatePage = procedureLinesString;
