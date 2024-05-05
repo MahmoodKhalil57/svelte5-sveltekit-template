@@ -180,7 +180,7 @@
 			window.history.back();
 		}}>Back</button
 	>
-	<div class="w-full flex flex-col justify-center items-center gap-3">
+	<div class="w-full flex flex-col justify-center items-center gap-3 pb-5">
 		{#if linesObject.structure.length}
 			<h1>Structure Code</h1>
 			<div class="mockup-code flex flex-col max-w-5xl">
