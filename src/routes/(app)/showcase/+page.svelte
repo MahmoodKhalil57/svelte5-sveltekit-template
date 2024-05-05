@@ -140,7 +140,6 @@
 		)) as Response;
 		const routerCode = await res.text();
 		const procedureLinesString = extractStructureProcedure(routerCode, procedure);
-		console.log('🚀 ~ procedureLinesString:', procedureLinesString);
 		if (procedureLinesString) {
 			linesObject.structure = procedureLinesString;
 		} else {
@@ -154,7 +153,6 @@
 			`
 		)) as Response;
 		const routerCode = await res.text();
-		console.log('🚀 ~ getTemplatePage ~ routerCode:', routerCode);
 		const procedureLinesString = routerCode.split('\n');
 		if (procedureLinesString) {
 			linesObject.templatePage = procedureLinesString;
