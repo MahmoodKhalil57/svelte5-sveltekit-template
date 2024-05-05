@@ -6,10 +6,11 @@
 	export let onClick = () => {};
 	export let url = '';
 	export let id: string | undefined = undefined;
+	export let target: string | undefined = undefined;
 </script>
 
 {#if url}
-	<a href={url}>
+	<a href={url} {target}>
 		{#if form === ''}
 			<button {id} class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
 				<slot />
