@@ -39,6 +39,9 @@ export default {
 			ctx.status = responseStatus.SUCCESS;
 		}
 
+		if (ctx.status === responseStatus.SUCCESS && redirectUrl?.toString()) {
+			redirect(302, redirectUrl?.toString());
+		}
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
 				stores: { userAttributes: { set: privateCtx.userAttributes } },
@@ -318,6 +321,6 @@ export default {
 			});
 		}
 
-		redirect(302, '/');
+		redirect(302, '/closetab');
 	}
 } satisfies APIType['authRouter'];

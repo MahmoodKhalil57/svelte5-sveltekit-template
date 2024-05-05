@@ -47,8 +47,9 @@ export const apiStructure = {
 	},
 	authRouter: {
 		signOnGoogle: {
-			requestType: 'POST',
+			requestType: 'GET',
 			middlewares: ['hybridUserProcedure'],
+			endpointType: 'callback',
 			validation: z.object({})
 		},
 		signInEmail: {

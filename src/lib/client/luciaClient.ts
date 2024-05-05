@@ -30,5 +30,20 @@ export const signInEmail = async (email: string, password: string) => {
 };
 
 export const signOnGoogle = async () => {
-	await apiSend().authRouter.signOnGoogle.POST({});
+	// in another window, make a request to /api/authRouter/signOnGoogle
+
+	const loginWindow = window.open(
+		'/api/authRouter/signOnGoogle',
+		'GoogleLogin',
+		'width=500,height=600'
+	);
+
+	// Check every 500 milliseconds if the popup has been closed
+	const checkLoginWindow = setInterval(function () {
+		if (loginWindow && loginWindow.closed) {
+			clearInterval(checkLoginWindow);
+			// Refresh the parent page
+			window.location.reload();
+		}
+	}, 500);
 };
