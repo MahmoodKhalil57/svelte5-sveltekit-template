@@ -28,7 +28,6 @@ export const apiStructure = {
 	testRouter: {
 		testPost: {
 			requestType: 'POST',
-			middlewares: ['devProcedure'],
 			public: true,
 			validation: z.object({ name: z.string().min(1) }) satisfies z.AnyZodObject,
 			formStructure: [
@@ -43,7 +42,6 @@ export const apiStructure = {
 		},
 		testGet: {
 			requestType: 'GET',
-			middlewares: ['devProcedure'],
 			validation: z.object({ name: z.string() }) satisfies z.AnyZodObject
 		}
 	},

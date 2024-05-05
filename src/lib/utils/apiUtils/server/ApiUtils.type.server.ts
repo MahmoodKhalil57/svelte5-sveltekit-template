@@ -156,7 +156,7 @@ export type ContextOutput<
 	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>
 > =
 	MiddlewareOutput<AS, R, P, GC, MP> extends undefined
-		? { ctx: ReturnType<GC> }
+		? { ctx: Awaited<ReturnType<GC>> }
 		: MiddlewareOutput<AS, R, P, GC, MP>;
 
 export type APIInput<
