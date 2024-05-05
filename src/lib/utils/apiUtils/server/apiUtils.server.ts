@@ -23,9 +23,12 @@ import type {
 	StructureProcedures,
 	ApiType,
 	EndpointType,
-	serverStoreActionInputs
-} from '../server/ApiUtils.type.server';
+	serverStoreActionInputs,
+	LogData
+} from './ApiUtils.type.server';
 import { zu } from 'zod_utilz';
+
+let loggerData: { request?: Request; requestStatus?: responseStatus } = {};
 
 type CookieSerializeOptions = Parameters<Cookies['set']>[2];
 export const cookiesWrapper = (
@@ -153,6 +156,7 @@ export const throwError = (codeNum: NumericRange<400, 599>) => {
 };
 
 export const getError = <S extends responseStatus, B>(status: S, body: B) => {
+	loggerData.requestStatus = status;
 	return {
 		status,
 		body
@@ -213,17 +217,20 @@ export const svelteApiHandle =
 		AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 		GC extends GetContext,
 		MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
+		LD extends LogData | undefined,
 		STHDL extends ServerStoreHandle | undefined
 	>(
 		apiStructure: AS,
 		getContext: GC,
 		middlewareMap: MP,
 		API: ApiType<AS, GC, MP, STHDL>,
-		cookieVersion = '0.0.0'
+		cookieVersion = '0.0.0',
+		logData?: LD
 	): Handle =>
 	async ({ event, resolve }) => {
 		const { cookies } = handleCookieVersion(event.cookies, cookieVersion);
 		event.cookies = cookies;
+		logData?.clear();
 		// init hybridUser
 		try {
 			// check cookies to see if has unloggedUserID
@@ -235,7 +242,12 @@ export const svelteApiHandle =
 				);
 			}
 		} catch (e) {
-			console.log('🚀 ~ e:', e);
+			logData?.error({
+				codeLocation: '🚀 ~ e:',
+				message: JSON.stringify(e),
+				request: loggerData.request,
+				requestStatus: loggerData.requestStatus
+			});
 		}
 
 		// handle api request
@@ -254,8 +266,16 @@ export const svelteApiHandle =
 					apiStructure,
 					getContext,
 					middlewareMap,
-					API
+					API,
+					logData
 				);
+				logData?.info({
+					codeLocation: '🚀 ~ bodyResponse:',
+					response: bodyResponse as Response,
+					request: loggerData.request,
+					requestStatus: loggerData.requestStatus
+				});
+				await logData?.flush();
 				const cookies = event.cookies.getAll();
 				const headers = new Headers();
 				cookies.forEach(({ name, value }) => {
@@ -272,6 +292,14 @@ export const svelteApiHandle =
 				if ((e as Redirect)?.location) {
 					redirect((e as Redirect)?.status, (e as Redirect)?.location);
 				}
+				loggerData.requestStatus = responseStatus.NOT_FOUND;
+				logData?.error({
+					codeLocation: '🚀 ~ e:',
+					message: JSON.stringify(e),
+					request: loggerData.request,
+					requestStatus: loggerData.requestStatus
+				});
+				await logData?.flush();
 				throw fail(404);
 			}
 			return response;
@@ -285,6 +313,7 @@ export const handleRequest = async <
 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 	GC extends GetContext,
 	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
+	LD extends LogData | undefined,
 	STHDL extends ServerStoreHandle | undefined
 >(
 	url: URL,
@@ -294,8 +323,11 @@ export const handleRequest = async <
 	apiStructure: AS,
 	getContext: GC,
 	middlewareMap: MP,
-	API: ApiType<AS, GC, MP, STHDL>
+	API: ApiType<AS, GC, MP, STHDL>,
+	logData?: LD
 ) => {
+	loggerData.request = request;
+
 	if (!['GET', 'POST'].includes(request.method)) {
 		// method not allowed
 		return getError(responseStatus.NOT_FOUND, { message: 'Method Not Allowed' });
@@ -338,7 +370,12 @@ export const handleRequest = async <
 			}
 		}
 	} catch (e) {
-		console.log('🚀 ~ e:', e);
+		logData?.error({
+			codeLocation: '🚀 ~ e:',
+			message: JSON.stringify(e),
+			request: loggerData.request,
+			requestStatus: loggerData.requestStatus
+		});
 	}
 
 	if (
@@ -389,6 +426,13 @@ export const handleRequest = async <
 
 	const { data } = await getData(url, request, rawBody, endpointType);
 
+	logData?.info({
+		codeLocation: '🚀 ~ data:',
+		message: JSON.stringify(data),
+		request: loggerData.request,
+		requestStatus: loggerData.requestStatus
+	});
+
 	if (looseValidation) {
 		if (request.method === 'POST') {
 			if (endpointType === endpoints.form && zodValidation?.shape[0]) {
@@ -436,7 +480,12 @@ export const handleRequest = async <
 				try {
 					jsonData = zu.stringToJSON().safeParse(data);
 				} catch (e) {
-					console.log('🚀 ~ e:', e);
+					logData?.error({
+						codeLocation: '🚀 ~ e:',
+						message: JSON.stringify(e),
+						request: loggerData.request,
+						requestStatus: loggerData.requestStatus
+					});
 				}
 				safeparseRes = zodValidation.safeParse(jsonData?.data);
 			}
@@ -448,7 +497,12 @@ export const handleRequest = async <
 				try {
 					jsonData = zu.stringToJSON().safeParse(data);
 				} catch (e) {
-					console.log('🚀 ~ e:', e);
+					logData?.error({
+						codeLocation: '🚀 ~ e:',
+						message: JSON.stringify(e),
+						request: loggerData.request,
+						requestStatus: loggerData.requestStatus
+					});
 				}
 				safeparseRes = zodValidation.safeParse(jsonData?.data);
 			}
@@ -487,11 +541,14 @@ export const handleRequest = async <
 			if (givenProcedure !== undefined) {
 				// @ts-expect-error - this is fine
 				const givenProcedureRes = await givenProcedure({ ...contextWrapper, input: parsedData });
+				// @ts-expect-error - this is fine
+				loggerData.requestStatus = contextWrapper.ctx.status as responseStatus;
 				return givenProcedureRes;
 			}
 			return getError(responseStatus.NOT_FOUND, { message: 'Procedure Not Found' });
 		} catch (error) {
 			if ((error as Redirect)?.location) {
+				loggerData.requestStatus = responseStatus.UNAUTHORIZED;
 				// callback redirects
 				redirect((error as Redirect)?.status, (error as Redirect)?.location);
 			}
