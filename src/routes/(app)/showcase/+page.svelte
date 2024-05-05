@@ -19,8 +19,11 @@
 
 	let linesObject: {
 		structure: string[];
+		structureLink?: string;
 		router: string[];
+		routerLink?: string;
 		templatePage: string[];
+		templatePageLink?: string;
 	} = {
 		structure: [],
 		router: [],
@@ -129,8 +132,10 @@
 		const procedureLinesString = extractRouterProcedureLines(routerCode, procedure);
 		if (procedureLinesString) {
 			linesObject.router = procedureLinesString;
+			linesObject.routerLink = `https://github.com/MahmoodKhalil57/svelteTemplate_V2/blob/main/src/server/routes/${route}.server.ts`;
 		} else {
 			linesObject.router = [];
+			linesObject.routerLink = undefined;
 		}
 	};
 
@@ -142,22 +147,25 @@
 		const procedureLinesString = extractStructureProcedure(routerCode, procedure);
 		if (procedureLinesString) {
 			linesObject.structure = procedureLinesString;
+			linesObject.structureLink = `https://github.com/MahmoodKhalil57/svelteTemplate_V2/blob/main/src/server/helpers/apiStructure.server.ts`;
 		} else {
 			linesObject.structure = [];
+			linesObject.structureLink = undefined;
 		}
 	};
 
 	const getTemplatePage = async (path: string) => {
 		const res = (await fetch(
-			`https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/routes/${path}/%2Bpage.svelte
-			`
+			`https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/routes/${path}/%2Bpage.svelte`
 		)) as Response;
 		const routerCode = await res.text();
 		const procedureLinesString = routerCode.split('\n');
 		if (procedureLinesString) {
 			linesObject.templatePage = procedureLinesString;
+			linesObject.templatePageLink = `https://github.com/MahmoodKhalil57/svelteTemplate_V2/blob/main/src/routes/${path}/%2Bpage.svelte`;
 		} else {
 			linesObject.templatePage = [];
+			linesObject.templatePageLink = undefined;
 		}
 	};
 
@@ -174,10 +182,14 @@
 	>
 	<div class="w-full flex flex-col justify-center items-center gap-3">
 		{#if linesObject.structure.length}
-			<div class="mockup-code flex-row max-w-5xl">
+			<div class="mockup-code flex flex-col max-w-5xl">
 				{#each linesObject.structure as line, i}
 					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
 				{/each}
+				{#if linesObject.structureLink}
+					<!-- svelte-ignore a11y-missing-content -->
+					<a href={linesObject.structureLink} class="i-mdi-github place-self-end px-4"></a>
+				{/if}
 			</div>
 		{/if}
 		{#if linesObject.router.length}
@@ -185,6 +197,10 @@
 				{#each linesObject.router as line, i}
 					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
 				{/each}
+				{#if linesObject.routerLink}
+					<!-- svelte-ignore a11y-missing-content -->
+					<a href={linesObject.routerLink} class="i-mdi-github place-self-end px-4"></a>
+				{/if}
 			</div>
 		{/if}
 		{#if linesObject.templatePage.length}
@@ -192,6 +208,10 @@
 				{#each linesObject.templatePage as line, i}
 					<pre data-prefix={i + 1} class="flex flex-row"><code use:formatElement>{line}</code></pre>
 				{/each}
+				{#if linesObject.templatePageLink}
+					<!-- svelte-ignore a11y-missing-content -->
+					<a href={linesObject.templatePageLink} class="i-mdi-github place-self-end px-4"></a>
+				{/if}
 			</div>
 		{/if}
 	</div>
