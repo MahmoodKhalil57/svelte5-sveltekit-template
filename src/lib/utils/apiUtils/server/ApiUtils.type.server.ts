@@ -205,3 +205,24 @@ export type GetContext = (
 export type MiddlewareMap<CTX extends Awaited<ReturnType<GetContext>>> = {
 	[key: string]: (ctx: CTX) => Promise<{ ctx: CTX }>;
 };
+
+export type LogData = {
+	clear: () => void;
+	info: (data: {
+		codeLocation: string;
+		message?: string;
+		request?: Request | undefined;
+		response?: Response | undefined;
+		requestStatus?: responseStatus | undefined;
+		identifier?: string;
+	}) => void;
+	error: (data: {
+		codeLocation: string;
+		message: string;
+		request?: Request | undefined;
+		response?: Response | undefined;
+		requestStatus?: responseStatus | undefined;
+		identifier?: string;
+	}) => void;
+	flush: () => Promise<void>;
+};
