@@ -28,6 +28,10 @@
 				};
 </script>
 
+<svelte:head>
+	<title>Reset</title>
+</svelte:head>
+
 <FormBuilder
 	route="authRouter"
 	procedure="resetPasswordEmail"
