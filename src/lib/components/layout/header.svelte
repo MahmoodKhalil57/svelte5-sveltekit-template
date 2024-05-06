@@ -11,7 +11,7 @@
 			<ul class="gap-3 px-1 text-lg menu menu-horizontal">
 				<Navigation />
 				<li class="flex items-center justify-center">
-					<DarkModeToggle themes={['light', 'forest']} />
+					<DarkModeToggle />
 				</li>
 			</ul>
 		</div>
