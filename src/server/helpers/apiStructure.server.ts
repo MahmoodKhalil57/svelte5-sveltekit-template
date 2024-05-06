@@ -42,7 +42,7 @@ export const apiStructure = {
 		},
 		testGet: {
 			requestType: 'GET',
-			validation: z.object({ name: z.string() }) satisfies z.AnyZodObject
+			validation: z.object({}) satisfies z.AnyZodObject
 		}
 	},
 	authRouter: {
