@@ -177,6 +177,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Showcase</title>
+</svelte:head>
+
 <section class="w-full flex flex-col justify-center items-center gap-3">
 	<button
 		on:click={() => {
