@@ -22,11 +22,13 @@
 					class="flex flex-col gap-2 text-center sm:gap-0"
 				>
 					<x>"{quote?.text}"</x>
-					<x class="flex flex-col sm:flex-row"
-						><b>- {quote?.quoteAuthor}</b><i class="opacity-70"
-							><x class="hidden sm:inline">, </x><x>{quote?.apiAuthor}</x></i
-						></x
-					>
+					<x class="flex flex-col sm:flex-row">
+						<b>- {quote?.quoteAuthor}</b>
+						<i class="opacity-70">
+							<x class="hidden sm:inline">, </x>
+							<x>{quote?.apiAuthor}</x>
+						</i>
+					</x>
 				</div>
 			{:else}
 				<a href="https://github.com/MahmoodKhalil57">
