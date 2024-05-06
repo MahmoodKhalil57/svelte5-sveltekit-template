@@ -3,6 +3,12 @@
 	import Header from '$lib/components/layout/header.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
 	import DrawerContainer from '$lib/components/ui/DrawerContainer.svelte';
+	import { onMount } from 'svelte';
+	import { themeChange } from 'theme-change';
+
+	onMount(() => {
+		themeChange(false);
+	});
 </script>
 
 <DrawerContainer closeBtn={true} drawerClass="bg-base-100" drawerId="main-menu-drawer">

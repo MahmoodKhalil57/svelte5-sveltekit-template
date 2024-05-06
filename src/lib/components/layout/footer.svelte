@@ -7,7 +7,7 @@
 
 	const getQuote = async () => {
 		const res = await fetch('https://type.fit/api/quotes');
-		const data = await res.json();
+		const data = (await res.json()) as any;
 		// random number from 0-15
 		const random = Math.floor(Math.random() * 15);
 		const authorArray = data[random].author.split(', ');
@@ -37,11 +37,11 @@
 				class="flex flex-col gap-2 text-center sm:gap-0"
 			>
 				<x>"{quote?.text}"</x>
-				<x class="flex flex-col sm:flex-row"
-					><b>- {quote?.quoteAuthor}</b><i class="opacity-70"
-						><x class="hidden sm:inline">, </x><x>{quote?.apiAuthor}</x></i
-					></x
-				>
+				<x class="flex flex-col sm:flex-row">
+					<b>- {quote?.quoteAuthor}</b><i class="opacity-70">
+						<x class="hidden sm:inline">, </x><x>{quote?.apiAuthor}</x>
+					</i>
+				</x>
 			</div>
 		{/if}
 	</div>

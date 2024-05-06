@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Logo from '$lib/components/template/logo.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
+	import DarkModeToggle from '$lib/components/ui/DarkModeToggle.svelte';
 </script>
 
 <header class="z-20 relative header min-h-header w-full">
@@ -9,6 +10,9 @@
 		<div class="flex-none hidden sm:block">
 			<ul class="gap-3 px-1 text-lg menu menu-horizontal">
 				<Navigation />
+				<li class="flex items-center justify-center">
+					<DarkModeToggle themes={['light', 'forest']} />
+				</li>
 			</ul>
 		</div>
 		<div class="absolute flex w-full pointer-events-none sm:hidden">
