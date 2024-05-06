@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Logo from '$lib/components/template/logo.svelte';
 	import { fade } from 'svelte/transition';
-	import { apiSend, responseStatus } from '$src/lib/client/apiClient';
+	import { apiSend, responseStatus } from '$lib/client/apiClient';
 </script>
 
 <footer

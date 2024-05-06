@@ -8,7 +8,7 @@ import type {
 	Routes,
 	SuccessfullType
 } from '$apiUtils/server/ApiUtils.type.server';
-import { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
+import { serverStoreHandle } from '$lib/stores/serverStoreHandle';
 
 export const apiSend = (f?: typeof fetch) =>
 	apiSendBuilder<typeof apiStructure, typeof API, typeof serverStoreHandle>(f, serverStoreHandle);

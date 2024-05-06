@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
+	import { serverStoreHandle } from '$lib/stores/serverStoreHandle';
 
 	import type { z } from 'zod';
 
-	import { toastWrapper } from '$src/lib/utils/toastWrapper';
+	import { toastWrapper } from '$lib/utils/toastWrapper';
 
-	import { publicApiStructure } from '$src/lib/utils/apiUtils/client/clientApiStructure';
+	import { publicApiStructure } from '$lib/utils/apiUtils/client/clientApiStructure';
 
 	import type { APIInputType, APIOutputType } from '$lib/client/apiClient';
 	import { responseStatus } from '$lib/client/apiClient';

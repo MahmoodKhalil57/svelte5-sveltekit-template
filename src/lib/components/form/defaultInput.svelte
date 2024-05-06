@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputTypeEnum } from '$src/lib/utils/apiUtils/client/apiClientUtils';
+	import { InputTypeEnum } from '$lib/utils/apiUtils/client/apiClientUtils';
 
 	export let label: string = '';
 	export let type: keyof typeof InputTypeEnum;

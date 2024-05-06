@@ -1,4 +1,4 @@
-import type { ApiStructureStructure } from '$src/lib/utils/apiUtils/server/ApiUtils.type.server';
+import type { ApiStructureStructure } from '$lib/utils/apiUtils/server/ApiUtils.type.server';
 import { z } from 'zod';
 import type { middlewareMap } from '$api/helpers/middleware.server';
 

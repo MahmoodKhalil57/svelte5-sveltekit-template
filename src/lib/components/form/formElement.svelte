@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { InputTypeEnum } from '$src/lib/utils/apiUtils/client/apiClientUtils';
-	import type { Field } from '$src/lib/utils/apiUtils/server/ApiUtils.type.server';
+	import { InputTypeEnum } from '$lib/utils/apiUtils/client/apiClientUtils';
+	import type { Field } from '$lib/utils/apiUtils/server/ApiUtils.type.server';
 	import ContinueWithGoogle from './continueWithGoogle.svelte';
 	import DefaultDecorator from './defaultDecorator.svelte';
 	import DefaultInput from './defaultInput.svelte';

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { apiSend, responseStatus } from '$src/lib/client/apiClient';
-	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
-	import { serverTimeStore } from '$src/lib/stores/testStore';
+	import { apiSend, responseStatus } from '$lib/client/apiClient';
+	import FormBuilder from '$lib/components/form/formBuilder.svelte';
+	import { serverTimeStore } from '$lib/stores/testStore';
 
 	let apiResponse:
 		| {

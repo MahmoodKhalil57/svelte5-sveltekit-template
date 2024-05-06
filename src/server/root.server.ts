@@ -3,7 +3,7 @@ import type { apiStructure } from '$api/helpers/apiStructure.server';
 import type { getContext } from '$api/helpers/context.server';
 import type { middlewareMap } from '$api/helpers/middleware.server';
 import testRouter from '$api/routes/testRouter.server';
-import type { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
+import type { serverStoreHandle } from '$lib/stores/serverStoreHandle';
 
 export const API = {
 	testRouter
