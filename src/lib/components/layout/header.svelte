@@ -3,6 +3,7 @@
 	import Navigation from '$lib/components/layout/navigation.svelte';
 	import { signOut } from '$src/lib/client/luciaClient';
 	import { userAttributesStore } from '$src/lib/stores/userStore';
+	import DarkModeToggle from '$lib/components/ui/DarkModeToggle.svelte';
 </script>
 
 <header class="z-20 relative header min-h-header w-full">
@@ -27,6 +28,9 @@
 							<a href="/login" class="btn btn-accent">Login</a>
 						{/if}
 					</div>
+				</li>
+				<li class="flex items-center justify-center">
+					<DarkModeToggle themes={['light', 'forest']} />
 				</li>
 			</ul>
 		</div>

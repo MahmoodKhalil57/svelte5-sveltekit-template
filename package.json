@@ -33,6 +33,7 @@
 		"@sveltejs/kit": "^2.5.7",
 		"@sveltejs/vite-plugin-svelte": "^3.1.0",
 		"@types/nodemailer": "^6.4.15",
+		"@tailwindcss/typography": "^0.5.13",
 		"@total-typescript/ts-reset": "^0.5.1",
 		"@typescript-eslint/parser": "^7.8.0",
 		"arctic": "^1.8.0",
@@ -67,6 +68,7 @@
 		"fast-memoize": "^2.5.2",
 		"svelte-french-toast": "^1.2.0",
 		"zod": "^3.23.6",
-		"zod_utilz": "^0.8.2"
+		"zod_utilz": "^0.8.2",
+		"theme-change": "^2.5.0"
 	}
 }

@@ -18,5 +18,13 @@
 	{
 		"iconeName": "carbon:promote",
 		"iconeColored": false
+	},
+	{
+		"iconeName": "carbon:sun",
+		"iconeColored": false
+	},
+	{
+		"iconeName": "carbon:moon",
+		"iconeColored": false
 	}
 ]
