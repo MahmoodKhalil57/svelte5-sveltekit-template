@@ -3,18 +3,24 @@
 	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
 	import { serverTimeStore } from '$src/lib/stores/testStore';
 
-	let apiRespnseReceived = false;
+	let apiResponse:
+		| {
+				text: string;
+				quoteAuthor: string;
+				apiAuthor: string;
+		  }
+		| undefined = undefined;
 	const sendRequest = async () => {
-		const res = await apiSend(fetch).testRouter.testGet.GET({ name: 'test' }, false);
+		const res = await apiSend(fetch).testRouter.testGet.GET({});
 		if (res.status === responseStatus.SUCCESS) {
-			apiRespnseReceived = true;
+			apiResponse = res.body.data.quote;
 		}
 	};
 </script>
 
 <section class="w-full flex flex-col justify-center items-center">
 	<button on:click={sendRequest}> Test Api </button>
-	{apiRespnseReceived ? 'SUCCESS' : ''}
+	{apiResponse ? JSON.stringify(apiResponse) : ''}
 
 	<div class="flex-col gap-6 flex-center">Hello</div>
 
