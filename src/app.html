@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="theme-color" content="#158811" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+		<meta name="theme-color" content="#158811" />
 		<link rel="manifest" crossorigin="use-credentials" href="%sveltekit.assets%/manifest.json" />
 		<link rel="icon" href="%sveltekit.assets%/pwa-192x192.png" />
 		<link rel="mask-icon" href="%sveltekit.assets%/maskable-icon-512x512.png" color="#ffffff" />
@@ -12,7 +13,6 @@
 			href="%sveltekit.assets%/apple-touch-icon-180x180.png"
 			sizes="180x180"
 		/>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>
 
@@ -27,27 +27,6 @@
 		if (!storageVersionSynced) {
 			window.localStorage.clear();
 			window.localStorage.setItem('storageVersion', storageVersion);
-		}
-
-		let themes = ['light', 'forest'];
-
-		if (themes.length) {
-			window.document.documentElement.setAttribute('data-themes', JSON.stringify(themes));
-		}
-
-		const localTheme = window.localStorage.getItem('theme');
-		const hasTheme = typeof localTheme == 'string' ? localTheme : null;
-
-		if (hasTheme) {
-			window.localStorage.setItem('theme', localTheme);
-			window.document.documentElement.setAttribute('data-theme', localTheme);
-		} else {
-			// get preferred color scheme
-			const darkQuery = window.matchMedia(`(prefers-color-scheme: dark)`);
-			const theme = darkQuery.matches ? themes[1] : themes[0];
-
-			window.localStorage.setItem('theme', theme);
-			window.document.documentElement.setAttribute('data-theme', theme);
 		}
 	</script>
 
