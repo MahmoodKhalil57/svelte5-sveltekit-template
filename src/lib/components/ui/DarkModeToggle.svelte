@@ -5,7 +5,7 @@
 
 	export let select = false;
 
-	export let themes = browser
+	let themes = browser
 		? (window.document.documentElement.getAttribute('data-themes') as string)
 		: '[]';
 </script>
