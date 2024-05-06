@@ -1,8 +1,8 @@
 <script lang="ts">
-	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
+	import FormBuilder from '$lib/components/form/formBuilder.svelte';
 	import type { ComponentProps } from 'svelte';
 	import type { PageData } from './$types';
-	import { responseStatus } from '$src/lib/client/apiClient';
+	import { responseStatus } from '$lib/client/apiClient';
 
 	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'resetPasswordEmail'>>;
 	type PreValidation = FormComponent['preValidation'];

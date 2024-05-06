@@ -4,7 +4,7 @@ import type { getContext } from '$api/helpers/context.server';
 import type { middlewareMap } from '$api/helpers/middleware.server';
 import testRouter from '$api/routes/testRouter.server';
 import authRouter from '$api/routes/authRouter.server';
-import type { serverStoreHandle } from '$src/lib/stores/serverStoreHandle';
+import type { serverStoreHandle } from '$lib/stores/serverStoreHandle';
 
 export const API = {
 	testRouter,

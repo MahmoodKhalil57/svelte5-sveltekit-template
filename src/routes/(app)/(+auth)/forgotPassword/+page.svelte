@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
+	import FormBuilder from '$lib/components/form/formBuilder.svelte';
 </script>
 
 <FormBuilder route="authRouter" procedure="sendResetPasswordEmail" Class="!pt-10 !pb-20" />

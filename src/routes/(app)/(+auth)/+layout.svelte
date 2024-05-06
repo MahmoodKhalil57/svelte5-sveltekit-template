@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { userAttributesStore } from '$src/lib/stores/userStore';
+	import { userAttributesStore } from '$lib/stores/userStore';
 	import { onDestroy, onMount } from 'svelte';
 	import { derived, type Unsubscriber } from 'svelte/store';
 

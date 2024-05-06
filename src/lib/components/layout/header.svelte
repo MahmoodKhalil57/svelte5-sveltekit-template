@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Logo from '$lib/components/template/logo.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
-	import { signOut } from '$src/lib/client/luciaClient';
-	import { userAttributesStore } from '$src/lib/stores/userStore';
+	import { signOut } from '$lib/client/luciaClient';
+	import { userAttributesStore } from '$lib/stores/userStore';
 	import DarkModeToggle from '$lib/components/ui/DarkModeToggle.svelte';
 </script>
 

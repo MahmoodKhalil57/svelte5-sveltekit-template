@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import FormBuilder from '$src/lib/components/form/formBuilder.svelte';
-	import { responseStatus } from '$src/lib/utils/apiUtils/client/serverResponse';
+	import FormBuilder from '$lib/components/form/formBuilder.svelte';
+	import { responseStatus } from '$lib/utils/apiUtils/client/serverResponse';
 
 	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'signUpEmail'>>;
 	type PreValidation = FormComponent['preValidation'];
