@@ -1,9 +1,13 @@
-<script>
+<script lang="ts">
+	import { browser } from '$app/environment';
+
 	export let Class = '';
 
 	export let select = false;
 
-	export let themes = ['light', 'dark'];
+	export let themes = browser
+		? (window.document.documentElement.getAttribute('data-themes') as string)
+		: '[]';
 </script>
 
 {#if select}
@@ -18,7 +22,10 @@
 		{/each}
 	</select>
 {:else}
-	<button class="p-2 opacity-75 hover:opacity-100 {Class}" data-toggle-theme={themes.join(',')}>
+	<button
+		class="!bg-transparent p-2 opacity-75 hover:opacity-100 {Class}"
+		data-toggle-theme={themes}
+	>
 		<span class="i-carbon-sun dark:i-carbon-moon text-lg" />
 	</button>
 {/if}

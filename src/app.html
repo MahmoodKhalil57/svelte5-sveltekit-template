@@ -29,12 +29,25 @@
 			window.localStorage.setItem('storageVersion', storageVersion);
 		}
 
+		let themes = ['light', 'forest'];
+
+		if (themes.length) {
+			window.document.documentElement.setAttribute('data-themes', JSON.stringify(themes));
+		}
+
 		const localTheme = window.localStorage.getItem('theme');
 		const hasTheme = typeof localTheme == 'string' ? localTheme : null;
 
 		if (hasTheme) {
 			window.localStorage.setItem('theme', localTheme);
 			window.document.documentElement.setAttribute('data-theme', localTheme);
+		} else {
+			// get preferred color scheme
+			const darkQuery = window.matchMedia(`(prefers-color-scheme: dark)`);
+			const theme = darkQuery.matches ? themes[1] : themes[0];
+
+			window.localStorage.setItem('theme', theme);
+			window.document.documentElement.setAttribute('data-theme', theme);
 		}
 	</script>
 
