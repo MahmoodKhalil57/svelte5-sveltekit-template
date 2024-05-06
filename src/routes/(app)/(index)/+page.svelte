@@ -18,6 +18,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Svelte Template</title>
+</svelte:head>
+
 <section class="w-full flex flex-col justify-center items-center">
 	<button on:click={sendRequest}> Test Api </button>
 	{apiResponse ? JSON.stringify(apiResponse) : ''}
