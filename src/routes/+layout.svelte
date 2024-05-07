@@ -1,8 +1,9 @@
 <script lang="ts">
 	import '../app.postcss';
+	let { children } = $props();
 </script>
 
-<slot />
+{@render children()}
 
 <svelte:head>
 	<meta name="author" content="Mahmood Khalil" />

@@ -3,7 +3,8 @@
 	import Logo from '$lib/components/template/logo.svelte';
 	import { fade } from 'svelte/transition';
 
-	let quote: { text: string; quoteAuthor: string; apiAuthor: string } | undefined;
+	let quote: { text: string; quoteAuthor: string; apiAuthor: string } | undefined =
+		$state(undefined);
 
 	const getQuote = async () => {
 		const res = await fetch('https://type.fit/api/quotes');

@@ -1,18 +1,32 @@
 <script lang="ts">
 	import { navigating } from '$app/stores';
 	import type { Unsubscriber } from 'svelte/store';
-	import { onMount, onDestroy } from 'svelte';
-	import { scrollStore } from '$lib/stores/cssStore';
+	import { onMount, onDestroy, type Snippet } from 'svelte';
+	import { freezeScrollRune } from '$lib/runes/cssRunes.svelte';
 
-	export let checked = false;
-
-	export let mobile = false;
-	export let right = false;
-	export let closeBtn = false;
-	export let backdropScreen = false;
-	export let drawerClass = '';
-	export let backdropClass = '';
-	export let drawerId: string;
+	let {
+		checked = $bindable(false),
+		mobile = false,
+		right = false,
+		closeBtn = false,
+		backdropScreen = false,
+		drawerClass = '',
+		backdropClass = '',
+		drawerId,
+		mainChild,
+		drawerContentChild
+	}: {
+		checked?: boolean;
+		mobile?: boolean;
+		right?: boolean;
+		closeBtn?: boolean;
+		backdropScreen?: boolean;
+		drawerClass?: string;
+		backdropClass?: string;
+		drawerId: string;
+		mainChild: Snippet;
+		drawerContentChild: Snippet;
+	} = $props();
 
 	let navigatingUnsubscriber: Unsubscriber | undefined;
 
@@ -30,16 +44,21 @@
 		}
 	});
 
-	let delayedChecked = checked;
-	$: if (!checked) {
-		setTimeout(() => {
-			delayedChecked = checked;
-		}, 500);
-	} else {
-		delayedChecked = checked;
-	}
+	let delayedChecked = $state(checked);
 
-	$: $scrollStore = checked;
+	$effect.pre(() => {
+		if (!checked) {
+			setTimeout(() => {
+				delayedChecked = checked;
+			}, 500);
+		} else {
+			delayedChecked = checked;
+		}
+	});
+
+	$effect.pre(() => {
+		freezeScrollRune.set(checked);
+	});
 </script>
 
 <div
@@ -49,7 +68,7 @@
 >
 	<input id={drawerId} type="checkbox" class="drawer-toggle" bind:checked />
 	<div class="drawer-content w-full overflow-x-hidden z-0">
-		<slot name="main" />
+		{@render mainChild()}
 	</div>
 	<div class="drawer-side overflow-hidden h-full !max-h-screen-new z-10">
 		<label
@@ -68,7 +87,7 @@
 					<div class="i-mdi-close-circle btn hover:scale-125"></div>
 				</label>
 			</div>
-			<slot name="drawerContent" />
+			{@render drawerContentChild()}
 		</ul>
 	</div>
 </div>
