@@ -34,9 +34,9 @@
 				color?: string;
 		  }
 		| undefined
-		| null = $state(undefined)
+		| null = $state(undefined);
 
-		let {
+	let {
 		route,
 		procedure,
 		class: Class = '',
@@ -47,91 +47,87 @@
 		formData = $bindable({}),
 		preValidation = undefined,
 		// @ts-ignore
-		submitFetchRequest = async (
-		route: R,
-		procedure: P,
-		formData: APIInputType<R, P>
-	) => {
-		let validate: boolean | undefined;
-		if (publicApiStructure[route]?.[procedure]?.validation) {
-			validate = true;
-		}
-		return await makeApiRequest(
-			'POST',
-			route,
-			procedure,
-			formData,
-			validate,
-			extraValidation,
-			fetch,
-			serverStoreHandle
-		);
-	},
+		submitFetchRequest = async (route: R, procedure: P, formData: APIInputType<R, P>) => {
+			let validate: boolean | undefined;
+			if (publicApiStructure[route]?.[procedure]?.validation) {
+				validate = true;
+			}
+			return await makeApiRequest(
+				'POST',
+				route,
+				procedure,
+				formData,
+				validate,
+				extraValidation,
+				fetch,
+				serverStoreHandle
+			);
+		},
 		extraValidation = undefined,
 		handleFlashMessage = async (
-		flashData:
-			| {
-					message: string;
-					color?: string;
-			  }
-			| undefined
-			| null,
-		inlineErrors: ErrorIssue[],
-		response: APIOutputType<R, P> | ApiClientError
-	) => {
-		let requestSuccess = false;
-		// @ts-expect-error 2339
-		switch (response?.status) {
-			case responseStatus.SUCCESS:
-				requestSuccess = true;
-				// @ts-expect-error 2339
-				if (response?.body?.data?.message) {
+			flashData:
+				| {
+						message: string;
+						color?: string;
+				  }
+				| undefined
+				| null,
+			inlineErrors: ErrorIssue[],
+			response: APIOutputType<R, P> | ApiClientError
+		) => {
+			let requestSuccess = false;
+			// @ts-expect-error 2339
+			switch (response?.status) {
+				case responseStatus.SUCCESS:
+					requestSuccess = true;
 					// @ts-expect-error 2339
-					flashData = { message: response.body.data.message, color: 'text-green-400' };
-				}
-				break;
-			case responseStatus.VALIDATION_ERROR:
-				flashData = undefined;
-				// @ts-expect-error 2339
-				inlineErrors = response?.errorIssues ?? [];
-				break;
-			default:
-				// @ts-expect-error 2339
-				if (response?.body?.data?.message) {
+					if (response?.body?.data?.message) {
+						// @ts-expect-error 2339
+						flashData = { message: response.body.data.message, color: 'text-green-400' };
+					}
+					break;
+				case responseStatus.VALIDATION_ERROR:
+					flashData = undefined;
 					// @ts-expect-error 2339
-					flashData = { message: response?.body?.data?.message ?? 'Internal Server Error' };
-				}
-				break;
-		}
-		return { flashData: flashData, inlineErrors: inlineErrors, requestSuccess };
-	},
+					inlineErrors = response?.errorIssues ?? [];
+					break;
+				default:
+					// @ts-expect-error 2339
+					if (response?.body?.data?.message) {
+						// @ts-expect-error 2339
+						flashData = { message: response?.body?.data?.message ?? 'Internal Server Error' };
+					}
+					break;
+			}
+			return { flashData: flashData, inlineErrors: inlineErrors, requestSuccess };
+		},
 		onSuccess = async (data: {
-		resetSubmitEvent: () => void;
-		response: SuccessFullApiSend<R, P>;
-	}) => {
-		data.resetSubmitEvent();
-	}
+			resetSubmitEvent: () => void;
+			response: SuccessFullApiSend<R, P>;
+		}) => {
+			data.resetSubmitEvent();
+		}
 	}: {
 		route: R;
 		procedure: P;
 		class?: string;
-		inlineErrors?:  ErrorIssue[];
-		disabledButton?:  boolean;
+		inlineErrors?: ErrorIssue[];
+		disabledButton?: boolean;
 		areYouSure?: boolean;
 		formStructure?: ReturnType<typeof getFormStructureWithRouteProcedure>;
 		formData?: ReturnType<typeof getEmptyFormObject>;
-		preValidation?: ((
-				payload: ReturnType<
-					typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
-				>
-		  ) => Promise<
-				Partial<Awaited<ReturnType<typeof validateZod<z.AnyZodObject, APIInputType<R, P>>>>>
-		  >),
+		preValidation?: (
+			payload: ReturnType<
+				typeof getEmptyFormObject<(typeof publicApiStructure)[R][P]['formStructure']>
+			>
+		) => Promise<
+			Partial<Awaited<ReturnType<typeof validateZod<z.AnyZodObject, APIInputType<R, P>>>>>
+		>;
 		submitFetchRequest?: (
-				route: R,
-				procedure: P,
-				formData: APIInputType<R, P>
-			) => Promise<APIOutputType<R, P> | ApiClientError>;
+			route: R,
+			procedure: P,
+			formData: APIInputType<R, P>
+		) => Promise<APIOutputType<R, P> | ApiClientError>;
 		extraValidation?: (payload: APIInputType<R, P>) => ReturnType<typeof validateZod>;
 		handleFlashMessage?: (
 			flashData:
@@ -144,10 +140,13 @@
 			inlineErrors: ErrorIssue[],
 			response: APIOutputType<R, P> | ApiClientError
 		) => Promise<{
-			flashData: {
-				message: string;
-				color?: string;
-			} | undefined | null;
+			flashData:
+				| {
+						message: string;
+						color?: string;
+				  }
+				| undefined
+				| null;
 			inlineErrors: ErrorIssue[];
 			requestSuccess: boolean;
 		}>;
@@ -156,7 +155,6 @@
 			response: SuccessFullApiSend<R, P>;
 		}) => Promise<void>;
 	} = $props();
-
 
 	type R = $$Generic<PublicRoutes>;
 	type P = $$Generic<PublicProcedures<R>>;

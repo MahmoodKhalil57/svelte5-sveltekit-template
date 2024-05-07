@@ -7,7 +7,7 @@
 		id = undefined,
 		placeHolder = '',
 		value = $bindable(''),
-		type,
+		type
 	}: {
 		class?: string;
 		label?: string;
@@ -16,7 +16,6 @@
 		value?: string;
 		type: keyof typeof InputTypeEnum;
 	} = $props();
-
 </script>
 
 <label class="w-full">

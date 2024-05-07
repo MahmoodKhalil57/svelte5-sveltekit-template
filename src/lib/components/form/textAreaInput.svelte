@@ -7,7 +7,7 @@
 		label = '',
 		placeHolder = '',
 		value = $bindable(''),
-		showCopy = false,
+		showCopy = false
 	}: {
 		class?: string;
 		id?: string;

@@ -446,7 +446,7 @@ export const handleRequest = async <
 				});
 				parsedData = newData;
 			} else if (endpointType !== endpoints.form) {
-				parsedData = JSON.parse(data) as any
+				parsedData = JSON.parse(data) as any;
 			}
 		} else if (request.method === 'GET' && zodValidation?.shape[0]) {
 			// extract the shapedata from request url search params

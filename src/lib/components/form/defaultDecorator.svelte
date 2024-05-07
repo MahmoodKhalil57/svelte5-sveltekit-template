@@ -7,7 +7,7 @@
 		id = undefined,
 		text = '',
 		ContainerClass = '',
-		type,
+		type
 	}: {
 		class?: string;
 		label?: string;
@@ -16,7 +16,6 @@
 		ContainerClass?: string;
 		type: keyof typeof InputTypeEnum;
 	} = $props();
-
 </script>
 
 <div class="w-full flex flex-col items-center justify-center {ContainerClass}">

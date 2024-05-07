@@ -16,7 +16,7 @@
 		getProcedureRouter(route, procedure);
 		getProcedureStructure(procedure);
 		getTemplatePage(templatePage);
-	})
+	});
 
 	let linesObject: {
 		structure: string[];

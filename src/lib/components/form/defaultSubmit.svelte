@@ -4,13 +4,12 @@
 	let {
 		class: Class = '',
 		id = undefined,
-		disabledButton = false,
+		disabledButton = false
 	}: {
 		class?: string;
 		id?: string;
 		disabledButton?: boolean;
 	} = $props();
-
 </script>
 
 <ButtonDefault

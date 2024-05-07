@@ -1,18 +1,16 @@
 <script lang="ts">
-
-let {
-	flashData
+	let {
+		flashData
 	}: {
-		 flashData:
-		| {
-				message?: string;
-				color?: string;
-				errorMessageList?: string[];
-		  }
-		| undefined
-		| null;
+		flashData:
+			| {
+					message?: string;
+					color?: string;
+					errorMessageList?: string[];
+			  }
+			| undefined
+			| null;
 	} = $props();
-
 </script>
 
 {#if flashData?.message}

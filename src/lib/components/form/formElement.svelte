@@ -8,17 +8,15 @@
 	import DefaultSubmit from './defaultSubmit.svelte';
 	import TextAreaInput from './textAreaInput.svelte';
 
-
-let {
-	field,
-value = $bindable(''),
-disabledButton = false
+	let {
+		field,
+		value = $bindable(''),
+		disabledButton = false
 	}: {
 		field: Field;
 		value?: string;
 		disabledButton?: boolean;
 	} = $props();
-
 </script>
 
 {#if [InputTypeEnum.TEXT, InputTypeEnum.EMAIL, InputTypeEnum.PASSWORD].includes(field.type)}

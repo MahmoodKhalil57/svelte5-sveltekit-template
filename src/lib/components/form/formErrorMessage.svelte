@@ -17,24 +17,21 @@
 		class: Class = '',
 		fieldName,
 		inlineErrors,
-		errorMessageClass = '',
+		errorMessageClass = ''
 	}: {
 		class?: string;
-		fieldName:  Parameters<typeof getInlineErrors>[0];
-		inlineErrors:  Parameters<typeof getInlineErrors>[1];
+		fieldName: Parameters<typeof getInlineErrors>[0];
+		inlineErrors: Parameters<typeof getInlineErrors>[1];
 		errorMessageClass?: string;
 	} = $props();
 
-
 	let divElement: HTMLDivElement | undefined;
-
 
 	let errors = $derived(getInlineErrors(fieldName, inlineErrors));
 
 	$effect(() => {
 		$size = errors?.length ? divElement?.firstElementChild?.clientHeight : 0;
 	});
-
 </script>
 
 <div bind:this={divElement} class="overflow-hidden" style="height:{$size}px">

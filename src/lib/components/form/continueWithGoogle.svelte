@@ -4,12 +4,11 @@
 
 	let {
 		class: Class = '',
-		id = '',
+		id = ''
 	}: {
 		class?: string;
 		id?: string;
 	} = $props();
-
 </script>
 
 <ButtonDefault
