@@ -6,7 +6,7 @@
 	<title>Forgot Password</title>
 </svelte:head>
 
-<FormBuilder route="authRouter" procedure="sendResetPasswordEmail" Class="!pt-10 !pb-20" />
+<FormBuilder route="authRouter" procedure="sendResetPasswordEmail" class="!pt-10 !pb-20" />
 
 <a
 	href="/showcase?route=authRouter&procedure=sendResetPasswordEmail&templatePage=(app)/(%2Bauth)/forgotPassword"

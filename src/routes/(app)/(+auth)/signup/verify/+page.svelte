@@ -6,7 +6,7 @@
 	<title>Verify</title>
 </svelte:head>
 
-<FormBuilder route="authRouter" procedure="verifyEmailSignup" Class="!pt-10 !pb-20" />
+<FormBuilder route="authRouter" procedure="verifyEmailSignup" class="!pt-10 !pb-20" />
 
 <a
 	href="/showcase?route=authRouter&procedure=verifyEmailSignup&templatePage=(app)/(%2Bauth)/signup/verify"

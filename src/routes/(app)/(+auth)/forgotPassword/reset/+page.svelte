@@ -36,7 +36,7 @@
 	route="authRouter"
 	procedure="resetPasswordEmail"
 	{preValidation}
-	Class="!pt-10 !pb-20"
+	class="!pt-10 !pb-20"
 />
 
 <a

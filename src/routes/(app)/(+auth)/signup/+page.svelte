@@ -31,7 +31,7 @@
 	<title>Signup</title>
 </svelte:head>
 
-<FormBuilder route="authRouter" procedure="signUpEmail" {preValidation} Class="!pt-10 !pb-20" />
+<FormBuilder route="authRouter" procedure="signUpEmail" {preValidation} class="!pt-10 !pb-20" />
 
 <a href="/showcase?route=authRouter&procedure=signUpEmail&templatePage=(app)/(%2Bauth)/signup">
 	See code
