@@ -16,7 +16,7 @@ export type Field = {
 	href?: string;
 	text?: string;
 	Class?: string;
-	ContainerClass?: string;
+	containerClass?: string;
 };
 export type FormStructure = readonly (readonly Field[])[];
 

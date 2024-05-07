@@ -7,7 +7,7 @@
 		label = '',
 		text = '',
 		href = '',
-		ContainerClass = '',
+		containerClass = '',
 		type
 	}: {
 		class?: string;
@@ -15,12 +15,12 @@
 		label?: string;
 		text?: string;
 		href?: string;
-		ContainerClass?: string;
+		containerClass?: string;
 		type: keyof typeof InputTypeEnum;
 	} = $props();
 </script>
 
-<div class="w-full flex flex-col items-center justify-center {ContainerClass}">
+<div class="w-full flex flex-col items-center justify-center {containerClass}">
 	{#if label}
 		<span>{label}</span>
 	{/if}
