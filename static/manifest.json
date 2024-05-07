@@ -1,11 +1,11 @@
 {
-	"name": "Svelte Template",
-	"short_name": "SvelteTemplate",
+	"name": "Svelte 5 Template",
+	"short_name": "Svelte5Template",
 	"start_url": "/",
 	"display": "standalone",
 	"background_color": "#ffffff",
 	"theme_color": "#158811",
-	"description": "Svelte Template",
+	"description": "Svelte 5 Template",
 	"icons": [
 		{
 			"src": "/pwa-64x64.png",

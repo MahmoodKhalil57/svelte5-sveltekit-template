@@ -9,12 +9,15 @@
 	<meta name="author" content="Mahmood Khalil" />
 	<meta name="publisher" content="Mahmood Khalil" />
 
-	<title>Svelte Template</title>
+	<title>Svelte 5 Template</title>
 
-	<meta name="application-name" content="Svelte Template" />
+	<meta name="application-name" content="Svelte 5 Template" />
 	<meta name="description" content="This template website" />
 	<meta name="theme-color" content="#158811" />
-	<meta name="keywords" content="svelte, template, tailwind, daisyui, prisma, luciaAuth" />
+	<meta
+		name="keywords"
+		content="svelte, svelte 5, sveltekit, template, tailwind, daisyui, prisma, luciaAuth"
+	/>
 
 	<meta http-equiv="content-language" content="en" />
 	<meta charset="UTF-8" />
