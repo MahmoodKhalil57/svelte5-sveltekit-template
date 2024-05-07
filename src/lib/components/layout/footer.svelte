@@ -40,7 +40,7 @@
 	<div class="flex justify-center w-full sm:w-auto">
 		<div class="flex gap-4 text-3xl">
 			<!-- svelte-ignore a11y-missing-content -->
-			<a href="https://github.com/MahmoodKhalil57/svelteTemplate_V2" class="i-mdi-github" />
+			<a href="https://github.com/MahmoodKhalil57/svelte5-sveltekit-template" class="i-mdi-github" />
 		</div>
 	</div>
 </footer>
