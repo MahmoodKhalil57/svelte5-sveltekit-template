@@ -1,50 +1,63 @@
 <script lang="ts">
-	export let Class = '';
-	export let form = '';
-	export let value = '';
-	export let dynamicDisabled = false;
-	export let onClick = () => {};
-	export let url = '';
-	export let id: string | undefined = undefined;
-	export let target: string | undefined = undefined;
+	import type { Snippet } from 'svelte';
+
+	let {
+		class: Class = '',
+		form = '',
+		value = '',
+		dynamicDisabled = false,
+		onclick = () => {},
+		url = '',
+		id = undefined,
+		target = undefined,
+		child = undefined
+	}: {
+		class?: string;
+		form?: string;
+		value?: string;
+		dynamicDisabled?: boolean;
+		onclick?: () => void;
+		url?: string;
+		id?: string;
+		target?: string;
+		child?: Snippet;
+	} = $props();
 </script>
 
 {#if url}
 	<a href={url} {target}>
 		{#if form === ''}
-			<button {id} class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
-				<slot />
+			<button {id} class="btn {Class}" {onclick} {value} disabled={dynamicDisabled}>
+				{@render child?.()}
 			</button>
 		{:else}
 			<button
 				{id}
-				on:submit|preventDefault
 				type="submit"
 				class="btn {Class}"
-				on:click={onClick}
+				{onclick}
 				disabled={dynamicDisabled}
 				{form}
 				{value}
 			>
-				<slot />
+				{@render child?.()}
 			</button>
 		{/if}
 	</a>
 {:else if form === ''}
-	<button {id} class="btn {Class}" on:click={onClick} {value} disabled={dynamicDisabled}>
-		<slot />
+	<button {id} class="btn {Class}" {onclick} {value} disabled={dynamicDisabled}>
+		{@render child?.()}
 	</button>
 {:else}
 	<button
 		{id}
-		on:submit|preventDefault
 		type="submit"
 		class="btn {Class}"
-		on:click={onClick}
+		{onclick}
 		disabled={dynamicDisabled}
 		{form}
 		{value}
 	>
-		<slot />
+		{@render child?.()}
 	</button>
 {/if}

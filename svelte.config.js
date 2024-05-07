@@ -37,6 +37,9 @@ const config = {
 	},
 	vitePlugin: {
 		inspector: true
+	},
+	compilerOptions: {
+		runes: true
 	}
 };
 

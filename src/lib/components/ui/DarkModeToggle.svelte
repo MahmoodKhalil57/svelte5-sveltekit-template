@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 
-	export let Class = '';
-
-	export let select = false;
+	let {
+		class: Class = '',
+		select = false
+	}: {
+		class?: string;
+		select?: boolean;
+	} = $props();
 
 	let themes = JSON.parse(
 		browser ? (window.document.documentElement.getAttribute('data-themes') as string) : '[]'
@@ -60,6 +64,6 @@
 	</select>
 {:else}
 	<button class="!bg-transparent p-2 opacity-75 hover:opacity-100 {Class}" use:getDataToggleTheme>
-		<span class="i-carbon-sun dark:i-carbon-moon text-lg" ></span>
+		<span class="i-carbon-sun dark:i-carbon-moon text-lg"></span>
 	</button>
 {/if}

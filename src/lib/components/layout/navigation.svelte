@@ -1,6 +1,10 @@
 <!-- svelte-ignore export_let_unused -->
 <script lang="ts">
-	export let menu = false;
+	let {
+		menu = false
+	}: {
+		menu?: boolean;
+	} = $props();
 
 	const links = [
 		{
