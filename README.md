@@ -1,38 +1,28 @@
-# create-svelte
+# Svelte 5 Auth NeoApi
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This is a simple template for a Svelte 5 sveltekit project with authentication using NeoApi.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Features:
+  - Prisma for storage 💾
+  - Lucia for authentication 🔐
+  - Tailwind CSS for styling 🎨
+  - NeoApi for type safe feature rich API calls 🪄
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+First time you clone the project, 
+  - Copy the `.env.example` file to `.env` and fill in the required values.
+  - Next, to install all dependancies and setup the database run
 ```bash
-npm run dev
+pnpm pre:dev
+```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+When you are ready to start the project, run the following command:
+```bash
+pnpm dev
 ```
 
 ## Building
 
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The project is pre-setup to be hosted on vercel, just make sure to:
+  - Upload the `.env` file to vercel
