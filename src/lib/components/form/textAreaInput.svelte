@@ -1,13 +1,21 @@
 <script lang="ts">
 	import ButtonDefault from '$lib/components/ui/buttonDefault.svelte';
 
-	export let label: string = '';
-	export let placeHolder: string = '';
-	export let id: string | undefined = undefined;
-	export let value: string = '';
-	export let Class: string = '';
-
-	export let showCopy = false;
+	let {
+		class: Class = '',
+		id = undefined,
+		label = '',
+		placeHolder = '',
+		value = $bindable(''),
+		showCopy = false,
+	}: {
+		class?: string;
+		id?: string;
+		label?: string;
+		placeHolder?: string;
+		value?: string;
+		showCopy?: boolean;
+	} = $props();
 
 	const copyText = () => {
 		navigator.clipboard.writeText(value);
@@ -17,9 +25,9 @@
 <div class="w-full relative">
 	{#if showCopy}
 		<ButtonDefault
-			onClick={copyText}
+			onclick={copyText}
 			id="test"
-			Class="absolute i-material-symbols-content-copy right-0 text-base-content opacity-10 hover:bg-base-content hover:opacity-80 m-3"
+			class="absolute i-material-symbols-content-copy right-0 text-base-content opacity-10 hover:bg-base-content hover:opacity-80 m-3"
 		/>
 	{/if}
 	<label class="w-full">

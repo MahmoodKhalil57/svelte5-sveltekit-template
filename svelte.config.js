@@ -39,7 +39,7 @@ const config = {
 		inspector: true
 	},
 	compilerOptions: {
-		runes: true
+		runes: undefined
 	}
 };
 

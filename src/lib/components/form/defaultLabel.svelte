@@ -1,13 +1,24 @@
 <script lang="ts">
 	import { InputTypeEnum } from '$lib/utils/apiUtils/client/apiClientUtils';
 
-	export let label: string = '';
-	export let type: keyof typeof InputTypeEnum;
-	export let id: string | undefined = undefined;
-	export let text: string = '';
-	export let href: string = '';
-	export let Class: string = '';
-	export let ContainerClass: string = '';
+	let {
+		class: Class = '',
+		id = undefined,
+		label = '',
+		text = '',
+		href = '',
+		ContainerClass = '',
+		type,
+	}: {
+		class?: string;
+		id?: string;
+		label?: string;
+		text?: string;
+		href?: string;
+		ContainerClass?: string;
+		type: keyof typeof InputTypeEnum;
+	} = $props();
+
 </script>
 
 <div class="w-full flex flex-col items-center justify-center {ContainerClass}">

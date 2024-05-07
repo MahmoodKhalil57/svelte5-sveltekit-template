@@ -9,7 +9,7 @@
 				quoteAuthor: string;
 				apiAuthor: string;
 		  }
-		| undefined = undefined;
+		| undefined = $state(undefined);
 	const sendRequest = async () => {
 		const res = await apiSend(fetch).testRouter.testGet.GET({});
 		if (res.status === responseStatus.SUCCESS) {
@@ -23,7 +23,7 @@
 </svelte:head>
 
 <section class="w-full flex flex-col justify-center items-center">
-	<button on:click={sendRequest}> Test Api </button>
+	<button onclick={sendRequest}> Test Api </button>
 	{apiResponse ? JSON.stringify(apiResponse) : ''}
 
 	<div class="flex-col gap-6 flex-center">Hello</div>

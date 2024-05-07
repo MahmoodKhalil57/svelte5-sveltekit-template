@@ -8,7 +8,7 @@
 	let procedure = '';
 	let templatePage = '';
 
-	$: if ($page) {
+	$effect(() => {
 		route = $page.url.searchParams.get('route') ?? '';
 		procedure = $page.url.searchParams.get('procedure') ?? '';
 		templatePage = $page.url.searchParams.get('templatePage') ?? '';
@@ -16,7 +16,7 @@
 		getProcedureRouter(route, procedure);
 		getProcedureStructure(procedure);
 		getTemplatePage(templatePage);
-	}
+	})
 
 	let linesObject: {
 		structure: string[];
@@ -183,7 +183,7 @@
 
 <section class="w-full flex flex-col justify-center items-center gap-3">
 	<button
-		on:click={() => {
+		onclick={() => {
 			window.history.back();
 		}}>Back</button
 	>
@@ -197,7 +197,7 @@
 					</pre>
 				{/each}
 				{#if linesObject.structureLink}
-					<!-- svelte-ignore a11y-missing-content -->
+					<!-- svelte-ignore a11y_missing_content -->
 					<a href={linesObject.structureLink} class="i-mdi-github place-self-end px-4"></a>
 				{/if}
 			</div>
@@ -211,7 +211,7 @@
 					</pre>
 				{/each}
 				{#if linesObject.routerLink}
-					<!-- svelte-ignore a11y-missing-content -->
+					<!-- svelte-ignore a11y_missing_content -->
 					<a href={linesObject.routerLink} class="i-mdi-github place-self-end px-4"></a>
 				{/if}
 			</div>
@@ -225,7 +225,7 @@
 					</pre>
 				{/each}
 				{#if linesObject.templatePageLink}
-					<!-- svelte-ignore a11y-missing-content -->
+					<!-- svelte-ignore a11y_missing_content -->
 					<a href={linesObject.templatePageLink} class="i-mdi-github place-self-end px-4"></a>
 				{/if}
 			</div>

@@ -8,10 +8,17 @@
 	import DefaultSubmit from './defaultSubmit.svelte';
 	import TextAreaInput from './textAreaInput.svelte';
 
-	export let field: Field;
 
-	export let value = '';
-	export let disabledButton = false;
+let {
+	field,
+value = $bindable(''),
+disabledButton = false
+	}: {
+		field: Field;
+		value?: string;
+		disabledButton?: boolean;
+	} = $props();
+
 </script>
 
 {#if [InputTypeEnum.TEXT, InputTypeEnum.EMAIL, InputTypeEnum.PASSWORD].includes(field.type)}
@@ -20,7 +27,7 @@
 		type={field.type}
 		placeHolder={field.placeHolder}
 		id={field.id}
-		Class={field.Class}
+		class={field.Class}
 		bind:value
 	/>
 {:else if field.type === InputTypeEnum.TEXTAREA}
@@ -28,7 +35,7 @@
 		label={field.label}
 		placeHolder={field.placeHolder}
 		id={field.id}
-		Class={field.Class}
+		class={field.Class}
 		bind:value
 	/>
 {:else if [InputTypeEnum.LINK, InputTypeEnum.TITLE].includes(field.type)}
@@ -37,18 +44,18 @@
 		id={field.id}
 		type={field.type}
 		href={field.href}
-		Class={field.Class}
+		class={field.Class}
 		ContainerClass={field.ContainerClass}
 		text={field.text}
 	/>
 {:else if field.type === InputTypeEnum.SUBMIT}
-	<DefaultSubmit id={field.id} Class={field.Class} {disabledButton} />
+	<DefaultSubmit id={field.id} class={field.Class} {disabledButton} />
 {:else if field.type === InputTypeEnum.GOOGLESIGNIN}
-	<ContinueWithGoogle id={field.id} Class={field.Class} />
+	<ContinueWithGoogle id={field.id} class={field.Class} />
 {:else if field.type === InputTypeEnum.DIVIDER}
 	<DefaultDecorator
 		id={field.id}
-		Class={field.Class}
+		class={field.Class}
 		type={field.type}
 		label={field.label}
 		text={field.text}

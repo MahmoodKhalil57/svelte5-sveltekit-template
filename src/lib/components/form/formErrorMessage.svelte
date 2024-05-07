@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { spring } from 'svelte/motion';
-	import { afterUpdate } from 'svelte';
 	import type { ApiClientError } from '$lib/utils/apiUtils/client/apiClientUtils';
 
 	const getInlineErrors = (key: string, errorIssues: ApiClientError['errorIssues']) => {
@@ -13,19 +12,29 @@
 	};
 
 	const size = spring();
-	export let fieldName: Parameters<typeof getInlineErrors>[0];
-	export let inlineErrors: Parameters<typeof getInlineErrors>[1];
 
-	export let Class = '';
-	export let errorMessageClass = '';
+	let {
+		class: Class = '',
+		fieldName,
+		inlineErrors,
+		errorMessageClass = '',
+	}: {
+		class?: string;
+		fieldName:  Parameters<typeof getInlineErrors>[0];
+		inlineErrors:  Parameters<typeof getInlineErrors>[1];
+		errorMessageClass?: string;
+	} = $props();
+
 
 	let divElement: HTMLDivElement | undefined;
 
-	$: errors = getInlineErrors(fieldName, inlineErrors);
 
-	afterUpdate(() => {
+	let errors = $derived(getInlineErrors(fieldName, inlineErrors));
+
+	$effect(() => {
 		$size = errors?.length ? divElement?.firstElementChild?.clientHeight : 0;
 	});
+
 </script>
 
 <div bind:this={divElement} class="overflow-hidden" style="height:{$size}px">

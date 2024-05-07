@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let flashData:
+
+let {
+	flashData
+	}: {
+		 flashData:
 		| {
 				message?: string;
 				color?: string;
@@ -7,6 +11,8 @@
 		  }
 		| undefined
 		| null;
+	} = $props();
+
 </script>
 
 {#if flashData?.message}

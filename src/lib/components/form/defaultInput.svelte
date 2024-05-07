@@ -1,12 +1,22 @@
 <script lang="ts">
 	import { InputTypeEnum } from '$lib/utils/apiUtils/client/apiClientUtils';
 
-	export let label: string = '';
-	export let type: keyof typeof InputTypeEnum;
-	export let placeHolder: string = '';
-	export let id: string | undefined = undefined;
-	export let value: string = '';
-	export let Class: string = '';
+	let {
+		class: Class = '',
+		label = undefined,
+		id = undefined,
+		placeHolder = '',
+		value = $bindable(''),
+		type,
+	}: {
+		class?: string;
+		label?: string;
+		id?: string;
+		placeHolder?: string;
+		value?: string;
+		type: keyof typeof InputTypeEnum;
+	} = $props();
+
 </script>
 
 <label class="w-full">
