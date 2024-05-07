@@ -4,11 +4,11 @@
 	let {
 		id,
 		label,
-		child
+		children
 	}: {
 		id?: string;
 		label?: string;
-		child?: Snippet;
+		children?: Snippet;
 	} = $props();
 </script>
 
@@ -19,6 +19,6 @@
 		{id}
 		class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box m-0 w-[130%]"
 	>
-		{@render child?.()}
+		{@render children?.()}
 	</ul>
 </div>
