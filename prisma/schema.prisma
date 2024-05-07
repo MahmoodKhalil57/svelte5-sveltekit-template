@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// vvvvvvvvvvvvvvvvvv luciaAuth
+// AuthToken model represents an authentication token for a user.
+model AuthToken {
+  id      String   @id @unique
+  created DateTime @default(now())
+  user_id String
+
+  authUser AuthUser @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("authToken")
+}
+
+// AuthSession model represents a user's authentication session.
+// And countains a reference to the associated AuthUser.
+model AuthSession {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+
+  authUser AuthUser @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+// AuthKey model represents an authentication key for a user.
+model AuthKey {
+  id              String   @id @unique
+  hashed_password String?
+  user_id         String
+  created         DateTime @default(now())
+
+  authUser AuthUser @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("authKey")
+}
+
+// AuthUser model represents a user in the authentication system.
+// It contains fields for user authentication, personal information, and other related data.
+model AuthUser {
+  id          String  @id @unique
+  is_verified Boolean @default(false)
+  is_admin    Boolean @default(false)
+
+  ipAddress      String
+  // here you can add custom fields for your user
+  username       String @unique
+  firstName      String
+  lastName       String
+  email          String @unique
+  profilePicture String
+
+  session    AuthSession[]
+  authKey    AuthKey[]
+  authToken  AuthToken[]
+  hybridUser HybridUser?
+
+  @@index([id])
+  @@map("authUser")
+}
+
+// ^^^^^^^^^^^^^^^^^^ luciaAuth
+
+//  This model represents an unlogged user in the system.
+model UnloggedUser {
+  id String @id @unique @default(uuid())
+
+  ipAddress String
+
+  hybridUser HybridUser?
+
+  @@index([id])
+  @@map("unloggedUser")
+}
+
+// This model represents hybrid user data,
+//     which can be associated with either a logged-in or unlogged user.
+model HybridUser {
+  id String @id @unique @default(uuid())
+
+  loggedUserId   String? @unique
+  unloggedUserId String? @unique
+
+  AuthUser     AuthUser?     @relation(fields: [loggedUserId], references: [id], onDelete: Cascade)
+  unloggedUser UnloggedUser? @relation(fields: [unloggedUserId], references: [id], onDelete: Cascade)
+
+  @@index([id])
+  @@map("hybridUser")
+}

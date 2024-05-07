@@ -10,6 +10,10 @@
 		{
 			text: 'Home',
 			href: '/'
+		},
+		{
+			text: 'Private',
+			href: '/testPrivate'
 		}
 	];
 </script>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Logo from '$lib/components/template/logo.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
+	import { signOut } from '$lib/client/luciaClient';
+	import { userAttributesStore } from '$lib/stores/userStore';
 	import DarkModeToggle from '$lib/components/ui/DarkModeToggle.svelte';
 </script>
 
@@ -10,6 +12,23 @@
 		<div class="flex-none hidden sm:block">
 			<ul class="gap-3 px-1 text-lg menu menu-horizontal">
 				<Navigation />
+				<li>
+					<div class="!bg-inherit p-0">
+						{#if $userAttributesStore?.id}
+							<div
+								on:keydown={() => signOut()}
+								on:click={() => signOut()}
+								role="button"
+								tabindex="0"
+								class="btn btn-accent"
+							>
+								Sign Out
+							</div>
+						{:else}
+							<a href="/login" class="btn btn-accent">Login</a>
+						{/if}
+					</div>
+				</li>
 				<li class="flex items-center justify-center">
 					<DarkModeToggle />
 				</li>

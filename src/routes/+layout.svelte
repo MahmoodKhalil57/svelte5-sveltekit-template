@@ -14,7 +14,7 @@
 	<meta name="application-name" content="Svelte Template" />
 	<meta name="description" content="This template website" />
 	<meta name="theme-color" content="#158811" />
-	<meta name="keywords" content="svelte, template, tailwind, daisyui, prisma" />
+	<meta name="keywords" content="svelte, template, tailwind, daisyui, prisma, luciaAuth" />
 
 	<meta http-equiv="content-language" content="en" />
 	<meta charset="UTF-8" />
