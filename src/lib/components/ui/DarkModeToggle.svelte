@@ -60,6 +60,6 @@
 	</select>
 {:else}
 	<button class="!bg-transparent p-2 opacity-75 hover:opacity-100 {Class}" use:getDataToggleTheme>
-		<span class="i-carbon-sun dark:i-carbon-moon text-lg" />
+		<span class="i-carbon-sun dark:i-carbon-moon text-lg" ></span>
 	</button>
 {/if}

@@ -19,7 +19,7 @@
 			<label
 				for="main-menu-drawer"
 				class="mx-6 text-3xl cursor-pointer pointer-events-auto hover:scale-105 drawer-button i-material-symbols-list-rounded"
-			/>
+			></label>
 		</div>
 	</div>
 </header>

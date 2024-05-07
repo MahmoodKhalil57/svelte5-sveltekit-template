@@ -57,7 +57,7 @@
 				? 'h-screen w-screen block fixed top-0 '
 				: ''} {backdropClass}"
 			for={drawerId}
-		/>
+		></label>
 		<ul
 			class="menu p-4 w-3/4 xs:max-w-[45%] sm:max-w-[50%] md:max-w-[45%] lg:max-w-[35%] xl:max-w-[29%] h-full flex flex-col flex-nowrap {delayedChecked
 				? ''
