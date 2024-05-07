@@ -10,7 +10,7 @@
 		url = '',
 		id = undefined,
 		target = undefined,
-		child = undefined
+		children = undefined
 	}: {
 		class?: string;
 		form?: string;
@@ -20,7 +20,7 @@
 		url?: string;
 		id?: string;
 		target?: string;
-		child?: Snippet;
+		children?: Snippet;
 	} = $props();
 </script>
 
@@ -28,7 +28,7 @@
 	<a href={url} {target}>
 		{#if form === ''}
 			<button {id} class="btn {Class}" {onclick} {value} disabled={dynamicDisabled}>
-				{@render child?.()}
+				{@render children?.()}
 			</button>
 		{:else}
 			<button
@@ -40,13 +40,13 @@
 				{form}
 				{value}
 			>
-				{@render child?.()}
+				{@render children?.()}
 			</button>
 		{/if}
 	</a>
 {:else if form === ''}
 	<button {id} class="btn {Class}" {onclick} {value} disabled={dynamicDisabled}>
-		{@render child?.()}
+		{@render children?.()}
 	</button>
 {:else}
 	<button
@@ -58,6 +58,6 @@
 		{form}
 		{value}
 	>
-		{@render child?.()}
+		{@render children?.()}
 	</button>
 {/if}
