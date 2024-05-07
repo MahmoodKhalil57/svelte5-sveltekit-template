@@ -18,6 +18,12 @@ const config = {
 		}
 	},
 	kit: {
+		alias: {
+			$e: path.resolve('./src/env.server.ts'),
+			$api: path.resolve('./src/server'),
+			$src: path.resolve('./src'),
+			$apiUtils: path.resolve('./src/lib/utils/apiUtils')
+		},
 		adapter: adapter({
 			// default options are shown. On some platforms
 			// these options are set automatically — see below

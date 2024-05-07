@@ -3,6 +3,7 @@
 	import Header from '$lib/components/layout/header.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
 	import DrawerContainer from '$lib/components/ui/DrawerContainer.svelte';
+	import { Toaster } from 'svelte-french-toast';
 	import { onMount } from 'svelte';
 	import { themeChange } from 'theme-change';
 
@@ -21,3 +22,5 @@
 	</svelte:fragment>
 	<Navigation menu slot="drawerContent" />
 </DrawerContainer>
+
+<Toaster />

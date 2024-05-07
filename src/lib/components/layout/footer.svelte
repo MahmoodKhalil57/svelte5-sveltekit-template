@@ -1,26 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Logo from '$lib/components/template/logo.svelte';
 	import { fade } from 'svelte/transition';
-
-	let quote: { text: string; quoteAuthor: string; apiAuthor: string } | undefined;
-
-	const getQuote = async () => {
-		const res = await fetch('https://type.fit/api/quotes');
-		const data = (await res.json()) as any;
-		// random number from 0-15
-		const random = Math.floor(Math.random() * 15);
-		const authorArray = data[random].author.split(', ');
-
-		quote = {
-			text: data[random].text,
-			quoteAuthor: authorArray[0],
-			apiAuthor: authorArray[1]
-		};
-	};
-	onMount(() => {
-		getQuote();
-	});
+	import { apiSend, responseStatus } from '$lib/client/apiClient';
 </script>
 
 <footer
@@ -31,19 +12,30 @@
 			<Logo />
 		</a>
 
-		{#if quote}
-			<div
-				transition:fade={{ delay: 250, duration: 300 }}
-				class="flex flex-col gap-2 text-center sm:gap-0"
-			>
-				<x>"{quote?.text}"</x>
-				<x class="flex flex-col sm:flex-row">
-					<b>- {quote?.quoteAuthor}</b><i class="opacity-70">
-						<x class="hidden sm:inline">, </x><x>{quote?.apiAuthor}</x>
-					</i>
-				</x>
-			</div>
-		{/if}
+		{#await apiSend(fetch).testRouter.testGet.GET({})}
+			<div></div>
+		{:then response}
+			{#if response.status === responseStatus.SUCCESS}
+				{@const quote = response.body.data.quote}
+				<div
+					transition:fade={{ delay: 250, duration: 300 }}
+					class="flex flex-col gap-2 text-center sm:gap-0"
+				>
+					<x>"{quote?.text}"</x>
+					<x class="flex flex-col sm:flex-row">
+						<b>- {quote?.quoteAuthor}</b>
+						<i class="opacity-70">
+							<x class="hidden sm:inline">, </x>
+							<x>{quote?.apiAuthor}</x>
+						</i>
+					</x>
+				</div>
+			{:else}
+				<a href="https://github.com/MahmoodKhalil57">
+					Please report this issue https://github.com/MahmoodKhalil57
+				</a>
+			{/if}
+		{/await}
 	</div>
 	<div class="flex justify-center w-full sm:w-auto">
 		<div class="flex gap-4 text-3xl">

@@ -3,15 +3,17 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
-		"pre:dev": "pnpm i",
-		"build": "vite build",
+		"dev": "pnpm script:migrateApiStructure && vite dev",
+		"pre:dev": "pnpm i && pnpm script:migrateApiStructure",
+		"build": "pnpm pre:build && vite build",
+		"pre:build": "pnpm script:migrateApiStructure",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
+		"script:migrateApiStructure": "node ./scripts/migrate-api-structure.server.js ./src/server/helpers/apiStructure.server.ts ./src/lib/utils/apiUtils/client/clientApiStructure.ts",
 		"pwa:generate": "pwa-assets-generator --preset minimal-2023 static/logo-removebg-preview.png",
 		"icones:generate": "cd node_modules/tailwind-icones-plugin && pnpm generate:icones \"%cd%\"",
 		"linux:icones:generate": "current_dir=$(pwd) && cd node_modules/tailwind-icones-plugin && pnpm generate:icones \"$current_dir\""
@@ -32,6 +34,7 @@
 		"eslint": "^9.2.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.38.0",
+		"highlight.js": "^11.9.0",
 		"postcss": "^8.4.38",
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.3",
@@ -46,6 +49,10 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"theme-change": "^2.5.0"
+		"fast-memoize": "^2.5.2",
+		"svelte-french-toast": "^1.2.0",
+		"theme-change": "^2.5.0",
+		"zod": "^3.23.7",
+		"zod_utilz": "^0.8.2"
 	}
 }
