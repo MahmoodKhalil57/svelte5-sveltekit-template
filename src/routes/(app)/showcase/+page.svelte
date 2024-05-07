@@ -127,13 +127,13 @@
 
 	const getProcedureRouter = async (route: string, procedure: string) => {
 		const res = (await fetch(
-			`https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/server/routes/${route}.server.ts`
+			`https://raw.githubusercontent.com/MahmoodKhalil57/svelte5-sveltekit-template/main/src/server/routes/${route}.server.ts`
 		)) as Response;
 		const routerCode = await res.text();
 		const procedureLinesString = extractRouterProcedureLines(routerCode, procedure);
 		if (procedureLinesString) {
 			linesObject.router = procedureLinesString;
-			linesObject.routerLink = `https://github.com/MahmoodKhalil57/svelteTemplate_V2/blob/main/src/server/routes/${route}.server.ts`;
+			linesObject.routerLink = `https://github.com/MahmoodKhalil57/svelte5-sveltekit-template/blob/main/src/server/routes/${route}.server.ts`;
 		} else {
 			linesObject.router = [];
 			linesObject.routerLink = undefined;
@@ -142,13 +142,13 @@
 
 	const getProcedureStructure = async (procedure: string) => {
 		const res = (await fetch(
-			'https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/server/helpers/apiStructure.server.ts'
+			'https://raw.githubusercontent.com/MahmoodKhalil57/svelte5-sveltekit-template/main/src/server/helpers/apiStructure.server.ts'
 		)) as Response;
 		const routerCode = await res.text();
 		const procedureLinesString = extractStructureProcedure(routerCode, procedure);
 		if (procedureLinesString) {
 			linesObject.structure = procedureLinesString;
-			linesObject.structureLink = `https://github.com/MahmoodKhalil57/svelteTemplate_V2/blob/main/src/server/helpers/apiStructure.server.ts`;
+			linesObject.structureLink = `https://github.com/MahmoodKhalil57/svelte5-sveltekit-template/blob/main/src/server/helpers/apiStructure.server.ts`;
 		} else {
 			linesObject.structure = [];
 			linesObject.structureLink = undefined;
@@ -157,13 +157,13 @@
 
 	const getTemplatePage = async (path: string) => {
 		const res = (await fetch(
-			`https://raw.githubusercontent.com/MahmoodKhalil57/svelteTemplate_V2/main/src/routes/${path}/%2Bpage.svelte`
+			`https://raw.githubusercontent.com/MahmoodKhalil57/svelte5-sveltekit-template/main/src/routes/${path}/%2Bpage.svelte`
 		)) as Response;
 		const routerCode = await res.text();
 		const procedureLinesString = routerCode.split('\n');
 		if (procedureLinesString) {
 			linesObject.templatePage = procedureLinesString;
-			linesObject.templatePageLink = `https://github.com/MahmoodKhalil57/svelteTemplate_V2/blob/main/src/routes/${path}/%2Bpage.svelte`;
+			linesObject.templatePageLink = `https://github.com/MahmoodKhalil57/svelte5-sveltekit-template/blob/main/src/routes/${path}/%2Bpage.svelte`;
 		} else {
 			linesObject.templatePage = [];
 			linesObject.templatePageLink = undefined;
