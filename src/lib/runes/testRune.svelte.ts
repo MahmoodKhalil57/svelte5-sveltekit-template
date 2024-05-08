@@ -4,7 +4,7 @@ const makeServerTimeRune = () => {
     get value() {
       return serverTimeRune;
     },
-    set: (newState: number | undefined) => {
+    set: (newState: typeof serverTimeRune) => {
       serverTimeRune = newState;
     }
   }
