@@ -4,6 +4,8 @@ This is a simple template for a Svelte 5 sveltekit project with authentication u
 
 Features:
 
+- Under development Svelte 5 🚧
+- SPA with SvelteKit 2 💨
 - PWA support 📱
 - Vercel deployment 🚀
 - Prisma for storage 💾
