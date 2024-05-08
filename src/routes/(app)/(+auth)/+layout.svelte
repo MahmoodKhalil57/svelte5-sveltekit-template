@@ -6,7 +6,7 @@
 	const { children } = $props();
 
 	$effect(() => {
-		if ($page && userAttributesRune) {
+		if ($page && userAttributesRune.value) {
 			goto('/');
 		}
 	});
