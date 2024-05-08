@@ -4,9 +4,12 @@ This is a simple template for a Svelte 5 sveltekit project with authentication u
 
 Features:
 
+- PWA support 📱
+- Vercel deployment 🚀
 - Prisma for storage 💾
 - Lucia for authentication 🔐
 - Tailwind CSS for styling 🎨
+- DaisyUI for theming 🌼
 - NeoApi for type safe feature rich API calls 🪄
 
 ## Developing
