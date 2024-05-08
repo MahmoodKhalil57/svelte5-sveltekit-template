@@ -19,7 +19,7 @@ export default {
 			},
 			[responseStatus.SUCCESS]: {
 				data: { name: input.name, message: 'Success' },
-				stores: {
+				runes: {
 					serverTime: {
 						set: new Date().getMilliseconds()
 					}

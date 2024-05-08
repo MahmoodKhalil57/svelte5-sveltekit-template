@@ -44,7 +44,7 @@ export default {
 		}
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: privateCtx.userAttributes } },
+				runes: { userAttributes: { set: privateCtx.userAttributes } },
 				clientRedirect: redirectUrl?.toString()
 			},
 			[responseStatus.INTERNAL_SERVER_ERROR]: {}
@@ -78,7 +78,7 @@ export default {
 
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: userAttributes } }
+				runes: { userAttributes: { set: userAttributes } }
 			},
 			[responseStatus.PRECONDITION_FAILED]: { message: 'Account not verified.' },
 			[responseStatus.UNAUTHORIZED]: { message: 'Incorrect email or password.' },
@@ -132,7 +132,7 @@ export default {
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
 				data: {},
-				stores: { userAttributes: { set: privateCtx.userAttributes } },
+				runes: { userAttributes: { set: privateCtx.userAttributes } },
 				clientRedirect: '/signup/verify'
 			},
 			[responseStatus.CONFLICT]: { message: 'Account already exists.' },
@@ -153,7 +153,7 @@ export default {
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
 				data: { code: input.code },
-				stores: { userAttributes: { set: privateCtx.userAttributes } },
+				runes: { userAttributes: { set: privateCtx.userAttributes } },
 				clientRedirect: '/api/authRouter/emailCallback?code=' + input.code.trim()
 			},
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
@@ -172,7 +172,7 @@ export default {
 		ctx.status = responseStatus.SUCCESS;
 
 		return getResponse(ctx.status, {
-			[responseStatus.SUCCESS]: { stores: { userAttributes: { set: null } }, clientRedirect: '' }
+			[responseStatus.SUCCESS]: { runes: { userAttributes: { set: null } }, clientRedirect: '' }
 		});
 	},
 	sendResetPasswordEmail: async ({ ctx, privateCtx, input }) => {
@@ -192,7 +192,7 @@ export default {
 
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: privateCtx.userAttributes } },
+				runes: { userAttributes: { set: privateCtx.userAttributes } },
 				clientRedirect: '/forgotPassword/verify'
 			},
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
@@ -213,7 +213,7 @@ export default {
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
 				data: { code: input.code },
-				stores: { userAttributes: { set: privateCtx.userAttributes } },
+				runes: { userAttributes: { set: privateCtx.userAttributes } },
 				clientRedirect: '/forgotPassword/reset?code=' + input.code.trim()
 			},
 			[responseStatus.NOT_FOUND]: { message: 'No account attributed with this Email.' },
@@ -258,7 +258,7 @@ export default {
 
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: userAttributes } }
+				runes: { userAttributes: { set: userAttributes } }
 			},
 			[responseStatus.NOT_FOUND]: { message: 'Ivalid request, please generate new reset link.' },
 			[responseStatus.INTERNAL_SERVER_ERROR]: { message: 'Internal Server Error.' }
@@ -270,7 +270,7 @@ export default {
 
 		return getResponse(ctx.status, {
 			[responseStatus.SUCCESS]: {
-				stores: { userAttributes: { set: userAttributes } },
+				runes: { userAttributes: { set: userAttributes } },
 				clientRedirect: ''
 			}
 		});
@@ -297,13 +297,13 @@ export default {
 		let session = undefined;
 		let userAttributes = privateCtx.userAttributes;
 		const codeVerifierCookie = ctx.cookies.get('google_oauth_code_verifier') ?? '';
-		const storedState = ctx.cookies.get('google_oauth_state');
+		const runeState = ctx.cookies.get('google_oauth_state');
 		const ipAddress = ctx.request.headers.get('x-forwarded-for') || ctx.getClientAddress();
 		const unloggedId = ctx.cookies.get('unloggedinSession');
 
 		if (!userAttributes) {
 			const continueWithGoogleResponse = await continueWithGoogle(
-				storedState,
+				runeState,
 				codeVerifierCookie,
 				input.state,
 				input.code,

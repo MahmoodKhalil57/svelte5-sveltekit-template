@@ -26,7 +26,7 @@ export const signInEmail = async (email: string, password: string) => {
 		password
 	};
 	await apiSend().authRouter.signInEmail.POST(payload);
-	// setUserStore();
+	// setUserRune();
 };
 
 export const signOnGoogle = async () => {

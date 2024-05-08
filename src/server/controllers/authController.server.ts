@@ -258,7 +258,7 @@ export const verifyAuthUserEmail = async (code?: string, unloggedId?: string) =>
 };
 
 export const continueWithGoogle = async (
-	storedState?: string,
+	runeState?: string,
 	codeVerifierCookie?: string,
 	state?: string,
 	code?: string,
@@ -268,7 +268,7 @@ export const continueWithGoogle = async (
 	let userAttributes: User | null = null;
 	let session = undefined;
 	if (
-		storedState === state &&
+		runeState === state &&
 		googleAuth !== undefined &&
 		code !== undefined &&
 		codeVerifierCookie !== undefined
