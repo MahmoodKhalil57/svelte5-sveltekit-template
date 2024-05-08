@@ -3,6 +3,6 @@ import { serverTimeRune } from './testRune.svelte';
 
 export const serverRuneHandle = {
 	serverTime: {
-		set: (newValue: typeof serverTimeRune.value) => (serverTimeRune.value = newValue)
+		set: serverTimeRune.set
 	}
 } satisfies ServerRuneHandle;
