@@ -15,7 +15,7 @@ const makeFreezeScrollRune = () => {
 		}
 	};
 	return {
-		get() {
+		get value() {
 			return freezeScroll;
 		},
 		set: (newState: boolean) => {
