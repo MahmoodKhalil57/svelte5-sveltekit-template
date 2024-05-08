@@ -6,10 +6,10 @@ const makeUserAttributesRune = () => {
 		get value() {
 			return userAttributesRune;
 		},
-		set: (newState: typeof userAttributesRune) => {
+		set value(newState: typeof userAttributesRune) {
 			userAttributesRune = newState;
 		}
 	};
 };
 
-export let userAttributesRune = makeUserAttributesRune();
+export const userAttributesRune = makeUserAttributesRune();

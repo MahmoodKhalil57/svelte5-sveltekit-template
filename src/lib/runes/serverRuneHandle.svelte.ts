@@ -1,12 +1,12 @@
-import type { ServerRuneHandle as ServerRuneHandle } from '$apiUtils/client/apiClientUtils';
+import type { ServerRuneHandle } from '$apiUtils/client/apiClientUtils';
 import { serverTimeRune } from './testRune.svelte';
 import { userAttributesRune } from './userRune.svelte';
 
 export const serverRuneHandle = {
 	serverTime: {
-		set: serverTimeRune.set
+		set: (newValue: typeof serverTimeRune.value) => (serverTimeRune.value = newValue)
 	},
 	userAttributes: {
-		set: userAttributesRune.set
+		set: (newValue: typeof userAttributesRune.value) => (userAttributesRune.value = newValue)
 	}
 } satisfies ServerRuneHandle;
