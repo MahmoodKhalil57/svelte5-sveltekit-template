@@ -1,15 +1,14 @@
 <script lang="ts">
 	import FormBuilder from '$lib/components/form/formBuilder.svelte';
 	import type { ComponentProps } from 'svelte';
-	import type { PageData } from './$types';
 	import { responseStatus } from '$lib/client/apiClient';
 
 	type FormComponent = ComponentProps<FormBuilder<'authRouter', 'resetPasswordEmail'>>;
 	type PreValidation = FormComponent['preValidation'];
 
-	export let data: PageData;
+	let { data } = $props();
 
-	export const preValidation: PreValidation = async (payload) =>
+	const preValidation: PreValidation = async (payload) =>
 		!payload.password || payload.password === payload.confirmPassword
 			? {
 					validationSuccess: true,

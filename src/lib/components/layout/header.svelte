@@ -16,8 +16,8 @@
 					<div class="!bg-inherit p-0">
 						{#if userAttributesRune?.value?.id}
 							<div
-								on:keydown={() => signOut()}
-								on:click={() => signOut()}
+								onkeydown={() => signOut()}
+								onclick={() => signOut()}
 								role="button"
 								tabindex="0"
 								class="btn btn-accent"
