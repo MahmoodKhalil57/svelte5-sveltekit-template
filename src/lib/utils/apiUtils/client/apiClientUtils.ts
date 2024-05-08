@@ -50,24 +50,24 @@ const makeGetRequest = async <PT extends string, PL>(pt: PT, pl: PL, f: typeof f
 const memoizedGet = memoize(makeGetRequest, {
 	cache: {
 		create() {
-			const store: {
+			const rune: {
 				[key: string]: {
 					status: responseStatus;
 				};
 			} = {};
 			return {
 				has(key: string) {
-					return key in store;
+					return key in rune;
 				},
 				get(key: string) {
-					return store[key] as any as Promise<{ status: responseStatus }>;
+					return rune[key] as any as Promise<{ status: responseStatus }>;
 				},
 				set(key: string, value: Promise<{ status: responseStatus }>) {
 					const requestBlackList = ['{"name":"favorites","value":"true"}'];
 					if (!requestBlackList.find((blackList) => key.replace(/ /g, '').includes(blackList))) {
 						value.then((val) => {
 							if (val.status === responseStatus.SUCCESS) {
-								store[key] = val;
+								rune[key] = val;
 							}
 						});
 					}
@@ -186,7 +186,7 @@ export const makeApiRequest = async <
 		: APIInput<AS, R, P>,
 	V extends HasValidate<AS, R, P>,
 	E extends (payload: T) => ReturnType<typeof validateZod>,
-	STHDL extends ServerStoreHandle
+	STHDL extends ServerRuneHandle
 >(
 	requestType: RT,
 	route: R,
@@ -195,7 +195,7 @@ export const makeApiRequest = async <
 	validate: V,
 	extraValidation?: E,
 	f?: typeof fetch,
-	serverStoreHandle?: STHDL
+	serverRuneHandle?: STHDL
 ) => {
 	let safePayload: T | undefined = undefined;
 	let response:
@@ -320,10 +320,10 @@ export const makeApiRequest = async <
 		}
 	}
 
-	if (serverStoreHandle && response.status === responseStatus.SUCCESS) {
-		if (response?.body?.stores) {
+	if (serverRuneHandle && response.status === responseStatus.SUCCESS) {
+		if (response?.body?.runes) {
 			// @ts-ignore - this is fine
-			handleStoreResponse(serverStoreHandle, response.body.stores);
+			handleRuneResponse(serverRuneHandle, response.body.runes);
 		}
 
 		if (response?.body?.clientRedirect) {
@@ -352,19 +352,19 @@ export const makeApiRequest = async <
 				| ApiClientError;
 };
 
-export type ServerStoreHandle = {
+export type ServerRuneHandle = {
 	[key: string]: {
 		[key: string]: (value: any) => Promise<void> | void;
 	};
 };
 
-const handleStoreResponse = (
-	serverStoreHandle: ServerStoreHandle,
-	stores: { [key: string]: { [key: string]: {} } }
+const handleRuneResponse = (
+	serverRuneHandle: ServerRuneHandle,
+	runes: { [key: string]: { [key: string]: {} } }
 ) => {
-	Object.entries(stores).forEach(([storeName, store]) => {
-		Object.entries(store).forEach(([storeAction, value]) => {
-			serverStoreHandle[storeName][storeAction](value);
+	Object.entries(runes).forEach(([runeName, rune]) => {
+		Object.entries(rune).forEach(([runeAction, value]) => {
+			serverRuneHandle[runeName][runeAction](value);
 		});
 	});
 };
@@ -432,9 +432,9 @@ export type ProxyDataType<
 		: ProxyDataType<AS, T[K], K>;
 };
 
-export const handlerBuilder = <F extends typeof fetch, STHDL extends ServerStoreHandle, T>(
+export const handlerBuilder = <F extends typeof fetch, STHDL extends ServerRuneHandle, T>(
 	f?: F,
-	serverStoreHandle?: STHDL,
+	serverRuneHandle?: STHDL,
 	path: string[] = []
 ) => ({
 	get(target: T, prop: keyof T | RequestType): any {
@@ -460,12 +460,12 @@ export const handlerBuilder = <F extends typeof fetch, STHDL extends ServerStore
 					validate,
 					extraValidation,
 					f,
-					serverStoreHandle
+					serverRuneHandle
 				);
 		}
 		return new Proxy(
 			{} as T,
-			handlerBuilder<F, STHDL, any>(f, serverStoreHandle, [...path, prop as string])
+			handlerBuilder<F, STHDL, any>(f, serverRuneHandle, [...path, prop as string])
 		);
 	}
 });
@@ -473,8 +473,8 @@ export const handlerBuilder = <F extends typeof fetch, STHDL extends ServerStore
 export const apiSendBuilder = <
 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 	API,
-	STHDL extends ServerStoreHandle | undefined
+	STHDL extends ServerRuneHandle | undefined
 >(
 	f?: typeof fetch,
-	serverStoreHandle?: STHDL
-) => new Proxy({}, handlerBuilder(f, serverStoreHandle)) as ProxyDataType<AS, API, undefined>;
+	serverRuneHandle?: STHDL
+) => new Proxy({}, handlerBuilder(f, serverRuneHandle)) as ProxyDataType<AS, API, undefined>;

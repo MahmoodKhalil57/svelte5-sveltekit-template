@@ -3,7 +3,7 @@ import type { apiStructure } from '$api/helpers/apiStructure.server';
 import type { getContext } from '$api/helpers/context.server';
 import type { middlewareMap } from '$api/helpers/middleware.server';
 import testRouter from '$api/routes/testRouter.server';
-import type { serverStoreHandle } from '$lib/stores/serverStoreHandle';
+import type { serverRuneHandle } from '$lib/runes/serverRuneHandle.svelte';
 
 export const API = {
 	testRouter
@@ -13,7 +13,7 @@ export type APIType = ApiType<
 	typeof apiStructure,
 	typeof getContext,
 	typeof middlewareMap,
-	typeof serverStoreHandle
+	typeof serverRuneHandle
 >;
 
 export { responseStatus } from '$apiUtils/client/serverResponse';

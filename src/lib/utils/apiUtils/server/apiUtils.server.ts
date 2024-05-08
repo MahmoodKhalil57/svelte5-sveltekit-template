@@ -11,7 +11,7 @@ import {
 } from '@sveltejs/kit';
 import type { z } from 'zod';
 import { responseStatus } from '../client/serverResponse';
-import type { ErrorIssue, ServerStoreHandle } from '../client/apiClientUtils';
+import type { ErrorIssue, ServerRuneHandle } from '../client/apiClientUtils';
 import type {
 	RequestType,
 	Routes,
@@ -23,7 +23,7 @@ import type {
 	StructureProcedures,
 	ApiType,
 	EndpointType,
-	serverStoreActionInputs,
+	serverRuneActionInputs,
 	LogData
 } from './ApiUtils.type.server';
 import { zu } from 'zod_utilz';
@@ -176,7 +176,7 @@ export const getResponse = <
 		[key in S]: {
 			message?: string;
 			data?: any;
-			stores?: serverStoreActionInputs<ServerStoreHandle>;
+			runes?: serverRuneActionInputs<ServerRuneHandle>;
 			clientRedirect?: string;
 		};
 	}
@@ -218,7 +218,7 @@ export const svelteApiHandle =
 		GC extends GetContext,
 		MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
 		LD extends LogData | undefined,
-		STHDL extends ServerStoreHandle | undefined
+		STHDL extends ServerRuneHandle | undefined
 	>(
 		apiStructure: AS,
 		getContext: GC,
@@ -314,7 +314,7 @@ export const handleRequest = async <
 	GC extends GetContext,
 	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
 	LD extends LogData | undefined,
-	STHDL extends ServerStoreHandle | undefined
+	STHDL extends ServerRuneHandle | undefined
 >(
 	url: URL,
 	request: Request,
