@@ -4,10 +4,10 @@ const makeServerTimeRune = () => {
 		get value() {
 			return serverTimeRune;
 		},
-		set: (newState: typeof serverTimeRune) => {
+		set value(newState: typeof serverTimeRune) {
 			serverTimeRune = newState;
 		}
 	};
 };
 
-export let serverTimeRune = makeServerTimeRune();
+export const serverTimeRune = makeServerTimeRune();
