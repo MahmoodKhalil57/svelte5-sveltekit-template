@@ -1,7 +1,7 @@
 const makeServerTimeRune = () => {
   let serverTimeRune = $state<number | undefined>(undefined);
   return {
-    get() {
+    get value() {
       return serverTimeRune;
     },
     set: (newState: number | undefined) => {
