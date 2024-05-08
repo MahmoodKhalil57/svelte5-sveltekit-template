@@ -47,6 +47,7 @@
 	let delayedChecked = $state(checked);
 
 	$effect.pre(() => {
+		freezeScrollRune.value = checked
 		if (!checked) {
 			setTimeout(() => {
 				delayedChecked = checked;
@@ -54,10 +55,6 @@
 		} else {
 			delayedChecked = checked;
 		}
-	});
-
-	$effect.pre(() => {
-		freezeScrollRune.set(checked);
 	});
 </script>
 
@@ -67,7 +64,7 @@
 		: ''}"
 >
 	<input id={drawerId} type="checkbox" class="drawer-toggle" bind:checked />
-	<div class="drawer-content w-full overflow-x-hidden z-0">
+	<div class="z-0 w-full overflow-x-hidden drawer-content">
 		{@render mainChild()}
 	</div>
 	<div class="drawer-side overflow-hidden h-full !max-h-screen-new z-10">

@@ -18,7 +18,7 @@ const makeFreezeScrollRune = () => {
 		get value() {
 			return freezeScroll;
 		},
-		set: (newState: typeof freezeScroll) => {
+		set value(newState: typeof freezeScroll) {
 			if (browser) {
 				setFreezeScroll(newState);
 				freezeScroll = newState;
