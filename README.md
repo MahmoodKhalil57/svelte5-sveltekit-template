@@ -9,7 +9,7 @@ Features:
 - PWA support 📱
 - Vercel deployment 🚀
 - Prisma for storage 💾
-- Lucia for authentication 🔐
+- LuciaAuth for authentication 🔐
 - Tailwind CSS for styling 🎨
 - DaisyUI for theming 🌼
 - NeoApi for type safe feature rich API calls 🪄
