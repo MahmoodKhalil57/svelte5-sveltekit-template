@@ -5,7 +5,7 @@ export const scrollYRune = $state<number | undefined>(undefined);
 const makeFreezeScrollRune = () => {
 	let freezeScroll = $state(false);
 
-	const setFreezeScroll = (newState: boolean) => {
+	const setFreezeScroll = (newState: typeof freezeScroll) => {
 		if (browser) {
 			if (newState) {
 				document.body.classList.add('no-scroll');
@@ -14,22 +14,19 @@ const makeFreezeScrollRune = () => {
 			}
 		}
 	};
+
+	const set = (newState: typeof freezeScroll) => {
+		setFreezeScroll(newState);
+		freezeScroll = newState;
+	};
 	return {
 		get value() {
 			return freezeScroll;
 		},
 		set value(newState: typeof freezeScroll) {
-			if (browser) {
-				setFreezeScroll(newState);
-				freezeScroll = newState;
-			}
+			set(newState);
 		},
-		toggle: () => {
-			if (browser) {
-				freezeScroll = !freezeScroll;
-				setFreezeScroll(freezeScroll);
-			}
-		}
+		toggle: () => set(!freezeScroll)
 	};
 };
 
