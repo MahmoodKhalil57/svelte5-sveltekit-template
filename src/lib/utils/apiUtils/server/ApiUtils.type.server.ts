@@ -1,11 +1,8 @@
 import type { Cookies } from '@sveltejs/kit';
 import type { z, AnyZodObject } from 'zod';
 import type { responseStatus } from '../client/serverResponse';
-import type { InputTypeEnum, ApiClientError, ServerStoreHandle } from '../client/apiClientUtils';
+import type { InputTypeEnum, ApiClientError, ServerRuneHandle } from '../client/apiClientUtils';
 import type { endpoints } from './apiUtils.server';
-import type { apiStructure } from '$api/helpers/apiStructure.server';
-import type { getContext } from '$api/helpers/context.server';
-import type { middlewareMap } from '$api/helpers/middleware.server';
 
 export type EndpointType = keyof typeof endpoints;
 export type Field = {
@@ -16,7 +13,7 @@ export type Field = {
 	href?: string;
 	text?: string;
 	Class?: string;
-	ContainerClass?: string;
+	containerClass?: string;
 };
 export type FormStructure = readonly (readonly Field[])[];
 
@@ -90,17 +87,17 @@ export type FileType = {
 	authority: 'private';
 }[];
 
-export type serverStoreActionInputs<STHDL extends ServerStoreHandle | undefined> = {
+export type ServerRuneActionInputs<STHDL extends ServerRuneHandle | undefined> = {
 	[K in keyof STHDL]?: {
 		[K2 in keyof STHDL[K]]?: STHDL[K][K2] extends (value: infer V) => void ? V : never;
 	};
 };
 
-export type ServerResponse<STHDL extends ServerStoreHandle | undefined> = Promise<{
+export type ServerResponse<STHDL extends ServerRuneHandle | undefined> = Promise<{
 	body: {
 		message?: string;
 		data?: any;
-		stores?: serverStoreActionInputs<STHDL>;
+		runes?: ServerRuneActionInputs<STHDL>;
 		clientRedirect?: string;
 	};
 	status: responseStatus;
@@ -110,7 +107,7 @@ export type ApiType<
 	AS extends ApiStructureStructure<MiddlewareMap<Awaited<ReturnType<GetContext>>>>,
 	GC extends GetContext,
 	MP extends MiddlewareMap<Awaited<ReturnType<GC>>>,
-	STHDL extends ServerStoreHandle | undefined
+	STHDL extends ServerRuneHandle | undefined
 > = {
 	[R in Routes<AS>]: {
 		[P in Procedures<AS, R>]: AS[R][P] extends { [key: string]: unknown }

@@ -2,7 +2,7 @@
 	import Logo from '$lib/components/template/logo.svelte';
 	import Navigation from '$lib/components/layout/navigation.svelte';
 	import { signOut } from '$lib/client/luciaClient';
-	import { userAttributesStore } from '$lib/stores/userStore';
+	import { userAttributesRune } from '$lib/runes/userRune.svelte';
 	import DarkModeToggle from '$lib/components/ui/DarkModeToggle.svelte';
 </script>
 
@@ -14,7 +14,7 @@
 				<Navigation />
 				<li>
 					<div class="!bg-inherit p-0">
-						{#if $userAttributesStore?.id}
+						{#if userAttributesRune?.value?.id}
 							<div
 								on:keydown={() => signOut()}
 								on:click={() => signOut()}

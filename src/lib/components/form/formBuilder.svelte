@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { serverStoreHandle } from '$lib/stores/serverStoreHandle';
+	import { serverRuneHandle } from '$lib/runes/serverRuneHandle.svelte';
 
 	import type { z } from 'zod';
 
@@ -60,7 +60,7 @@
 				validate,
 				extraValidation,
 				fetch,
-				serverStoreHandle
+				serverRuneHandle
 			);
 		},
 		extraValidation = undefined,

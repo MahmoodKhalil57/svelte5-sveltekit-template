@@ -4,15 +4,11 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	let route = '';
-	let procedure = '';
-	let templatePage = '';
+	let route = $derived($page.url.searchParams.get('route') ?? '');
+	let procedure = $derived($page.url.searchParams.get('procedure') ?? '');
+	let templatePage = $derived($page.url.searchParams.get('templatePage') ?? '');
 
 	$effect(() => {
-		route = $page.url.searchParams.get('route') ?? '';
-		procedure = $page.url.searchParams.get('procedure') ?? '';
-		templatePage = $page.url.searchParams.get('templatePage') ?? '';
-
 		getProcedureRouter(route, procedure);
 		getProcedureStructure(procedure);
 		getTemplatePage(templatePage);
@@ -25,11 +21,11 @@
 		routerLink?: string;
 		templatePage: string[];
 		templatePageLink?: string;
-	} = {
+	} = $state({
 		structure: [],
 		router: [],
 		templatePage: []
-	};
+	});
 
 	const extractRouterProcedureLines = (code: string, procedure: string) => {
 		const lines = code.split('\n');

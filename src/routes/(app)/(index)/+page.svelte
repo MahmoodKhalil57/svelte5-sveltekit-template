@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiSend, responseStatus } from '$lib/client/apiClient';
 	import FormBuilder from '$lib/components/form/formBuilder.svelte';
-	import { serverTimeStore } from '$lib/stores/testStore';
+	import { serverTimeRune } from '$lib/runes/testRune.svelte';
 
 	let apiResponse:
 		| {
@@ -31,7 +31,7 @@
 	<FormBuilder route="testRouter" procedure="testPost" />
 
 	<div>
-		Server time: {$serverTimeStore}
+		Server time: {serverTimeRune}
 	</div>
 
 	<a href="/showcase?route=testRouter&procedure=testPost&templatePage=(app)/(index)">See code</a>

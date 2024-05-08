@@ -43,7 +43,7 @@
 		type={field.type}
 		href={field.href}
 		class={field.Class}
-		ContainerClass={field.ContainerClass}
+		containerClass={field.containerClass}
 		text={field.text}
 	/>
 {:else if field.type === InputTypeEnum.SUBMIT}
@@ -57,6 +57,6 @@
 		type={field.type}
 		label={field.label}
 		text={field.text}
-		ContainerClass={field.ContainerClass}
+		containerClass={field.containerClass}
 	/>
 {/if}

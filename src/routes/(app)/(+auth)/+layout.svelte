@@ -1,26 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { userAttributesStore } from '$lib/stores/userStore';
-	import { onDestroy, onMount } from 'svelte';
-	import { derived, type Unsubscriber } from 'svelte/store';
+	import { userAttributesRune } from '$lib/runes/userRune.svelte';
 
-	const redirectUser = derived([page, userAttributesStore], ([$page, $userAttributesStore]) => ({
-		$page,
-		$userAttributesStore
-	}));
+	const { children } = $props();
 
-	let redirectUserUnsubscriber: Unsubscriber | undefined;
-	onMount(() => {
-		redirectUserUnsubscriber = redirectUser.subscribe(({ $page, $userAttributesStore }) => {
-			if ($userAttributesStore) {
-				goto('/');
-			}
-		});
-	});
-	onDestroy(() => {
-		redirectUserUnsubscriber?.();
+	$effect(() => {
+		if ($page && userAttributesRune) {
+			goto('/');
+		}
 	});
 </script>
 
-<slot />
+{@render children()}

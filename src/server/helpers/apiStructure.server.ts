@@ -99,7 +99,7 @@ export const apiStructure = {
 						label: 'Dont have an account?',
 						text: 'Create one now!',
 						href: '/signup',
-						ContainerClass: 'gap-2 !flex-row'
+						containerClass: 'gap-2 !flex-row'
 					}
 				],
 				[
@@ -187,7 +187,7 @@ export const apiStructure = {
 						label: 'Already have an account?',
 						text: 'Login!',
 						href: '/login',
-						ContainerClass: 'gap-2 !flex-row'
+						containerClass: 'gap-2 !flex-row'
 					}
 				],
 				[

@@ -1,6 +1,6 @@
-import { serverStoreHandle } from '$lib/stores/serverStoreHandle';
+import { serverRuneHandle } from '$lib/runes/serverRuneHandle.svelte';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ data }) => {
-	serverStoreHandle.userAttributes.set(data?.userAttributes ?? null);
+	serverRuneHandle.userAttributes.set(data?.userAttributes ?? null);
 };
