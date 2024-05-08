@@ -31,7 +31,7 @@
 	<FormBuilder route="testRouter" procedure="testPost" />
 
 	<div>
-		Server time: {serverTimeRune}
+		Server time: {serverTimeRune.value}
 	</div>
 
 	<a href="/showcase?route=testRouter&procedure=testPost&templatePage=(app)/(index)">See code</a>
